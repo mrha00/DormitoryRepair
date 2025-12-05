@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using SmartDormitoryRepair.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using SmartDormitoryRepair.Domain;
 
 namespace SmartDormitoryRepair.Api.Controllers
 {
@@ -36,6 +37,30 @@ namespace SmartDormitoryRepair.Api.Controllers
             return Ok(new { token });
         }
 
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+        {
+            // 1. 检查用户名是否已存在
+            if (await _context.Users.AnyAsync(u => u.Username == dto.Username))
+            {
+                return BadRequest(new { message = "用户名已存在" });
+            }
+
+            // 2. 创建新用户（默认角色为学生）
+            var user = new User
+            {
+                Username = dto.Username,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                Role = "Student"
+            };
+
+            // 3. 保存到数据库
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "注册成功", userId = user.Id });
+        }
+
         private string GenerateJwtToken(string username, string role)
         {
             var jwtKey = _config["Jwt:Key"] ?? "";
@@ -65,6 +90,13 @@ namespace SmartDormitoryRepair.Api.Controllers
     }
 
     public class LoginDto
+    {
+        public string Username { get; set; } = null!;
+        public string Password { get; set; } = null!;
+    }
+
+    // DTO类
+    public class RegisterDto
     {
         public string Username { get; set; } = null!;
         public string Password { get; set; } = null!;
