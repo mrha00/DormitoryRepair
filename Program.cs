@@ -1,27 +1,34 @@
+ï»¿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 var builder = WebApplication.CreateBuilder(args);
+
+var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new Exception("JWT Keyæœªé…ç½®");
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? throw new Exception("JWT Issueræœªé…ç½®");
+var jwtAudience = builder.Configuration["Jwt:Audience"] ?? throw new Exception("JWT Audienceæœªé…ç½®");
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+        };
+    });
+
 builder.Services.AddAuthorization();
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
+app.UseAuthentication();
 app.UseAuthorization();
-
-// Ö±½ÓÐ´µÇÂ¼½Ó¿Ú£¬bypass Controller
-app.MapPost("/api/auth/login", (LoginDto dto) =>
-{
-    if (dto.Username == "admin" && dto.Password == "123456")
-    {
-        return Results.Ok(new { token = "fake-jwt-token" });
-    }
-    return Results.Unauthorized();
-});
-
-// ²âÊÔ½Ó¿Ú
-app.MapGet("/api/auth/test", () => Results.Ok(new { message = "APIÔËÐÐÕý³£", time = DateTime.Now }));
-
+app.MapControllers();
 app.Run("http://0.0.0.0:5000");
-
-public class LoginDto
-{
-    public string Username { get; set; }
-    public string Password { get; set; }
-}

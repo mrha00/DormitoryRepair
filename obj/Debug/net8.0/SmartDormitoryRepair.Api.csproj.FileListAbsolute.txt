@@ -26,4 +26,16 @@ F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Ap
 F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\obj\Debug\net8.0\SmartDormitoryRepair.Api.genruntimeconfig.cache
 F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\obj\Debug\net8.0\ref\SmartDormitoryRepair.Api.dll
 F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\obj\Debug\net8.0\SmartDormitoryRepair.Api.sourcelink.json
+F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\obj\Debug\net8.0\SmartDormitoryRepair.Api.csproj.AssemblyReference.cache
+F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\bin\Debug\net8.0\BCrypt.Net-Next.dll
+F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
+F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\obj\Debug\net8.0\SmartDor.0FA2C7F8.Up2Date
+F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\bin\Debug\net8.0\Microsoft.OpenApi.dll
 F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
