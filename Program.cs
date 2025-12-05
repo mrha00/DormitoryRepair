@@ -1,20 +1,27 @@
-namespace SmartDormitoryRepair.Api
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddAuthorization();
+
+var app = builder.Build();
+
+app.UseAuthorization();
+
+// 直接写登录接口，bypass Controller
+app.MapPost("/api/auth/login", (LoginDto dto) =>
 {
-    public class Program
+    if (dto.Username == "admin" && dto.Password == "123456")
     {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
-
-            // 暂时只保留必要的服务
-            builder.Services.AddControllers(); // 恢复这个，因为你要用控制器
-
-            var app = builder.Build();
-
-            app.MapControllers(); // 映射控制器路由
-            app.Run("http://0.0.0.0:5000"); // 指定HTTP端口
-
-            app.Run();
-        }
+        return Results.Ok(new { token = "fake-jwt-token" });
     }
+    return Results.Unauthorized();
+});
+
+// 测试接口
+app.MapGet("/api/auth/test", () => Results.Ok(new { message = "API运行正常", time = DateTime.Now }));
+
+app.Run("http://0.0.0.0:5000");
+
+public class LoginDto
+{
+    public string Username { get; set; }
+    public string Password { get; set; }
 }

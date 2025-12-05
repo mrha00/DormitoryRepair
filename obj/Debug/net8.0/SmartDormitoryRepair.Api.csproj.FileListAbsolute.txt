@@ -20,9 +20,10 @@ F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Ap
 F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\obj\Debug\net8.0\staticwebassets.build.json.cache
 F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\obj\Debug\net8.0\staticwebassets.development.json
 F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\obj\Debug\net8.0\SmartDormitoryRepair.Api.dll
 F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\obj\Debug\net8.0\refint\SmartDormitoryRepair.Api.dll
 F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\obj\Debug\net8.0\SmartDormitoryRepair.Api.pdb
 F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\obj\Debug\net8.0\SmartDormitoryRepair.Api.genruntimeconfig.cache
 F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\obj\Debug\net8.0\ref\SmartDormitoryRepair.Api.dll
+F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\obj\Debug\net8.0\SmartDormitoryRepair.Api.sourcelink.json
+F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

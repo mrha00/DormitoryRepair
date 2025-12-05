@@ -1,6 +1,7 @@
-@SmartDormitoryRepair.Api_HostAddress = http://localhost:5032
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
 
-GET {{SmartDormitoryRepair.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
+{
+  "username": "admin",
+  "password": "123456"
+}
