@@ -3,6 +3,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using SmartDormitoryRepair.Api.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace SmartDormitoryRepair.Api.Controllers
 {
@@ -11,23 +13,27 @@ namespace SmartDormitoryRepair.Api.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IConfiguration _config;
+        private readonly AppDbContext _context;
 
-        public AuthController(IConfiguration config)
+        public AuthController(IConfiguration config, AppDbContext context)
         {
             _config = config;
+            _context = context;
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginDto dto)
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-            var adminHash = "$2a$11$KHLIPm3f2AipGAKax9Ym6Oh3x3A23A93WGNCDO/4riexaJWo6Z.xS";
-
-            if (dto.Username == "admin" && BCrypt.Net.BCrypt.Verify(dto.Password, adminHash))
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Username == dto.Username);
+            
+            if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
             {
-                var token = GenerateJwtToken(dto.Username, "Admin");
-                return Ok(new { token });
+                return Unauthorized(new { message = "用户名或密码错误" });
             }
-            return Unauthorized(new { message = "用户名或密码错误" });
+
+            var token = GenerateJwtToken(user.Username, user.Role);
+            return Ok(new { token });
         }
 
         private string GenerateJwtToken(string username, string role)
