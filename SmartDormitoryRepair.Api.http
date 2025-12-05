@@ -1,0 +1,6 @@
+@SmartDormitoryRepair.Api_HostAddress = http://localhost:5032
+
+GET {{SmartDormitoryRepair.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
