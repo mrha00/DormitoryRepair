@@ -3,6 +3,7 @@ import Login from '../views/Login.vue'
 import OrderList from '../views/OrderList.vue'
 import OrderCreate from '../views/OrderCreate.vue'
 import OrderDetail from '../views/OrderDetail.vue'
+import NotificationCenter from '../views/NotificationCenter.vue'
 
 const routes = [
   {
@@ -26,6 +27,12 @@ const routes = [
     path: '/orders/:id',
     name: 'OrderDetail',
     component: OrderDetail,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/notifications',
+    name: 'NotificationCenter',
+    component: NotificationCenter,
     meta: { requiresAuth: true }
   }
 ]

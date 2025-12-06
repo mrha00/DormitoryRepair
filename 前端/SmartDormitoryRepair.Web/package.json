@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@microsoft/signalr": "^10.0.0",
     "@vitejs/plugin-vue": "^6.0.2",
     "axios": "^1.13.2",
     "element-plus": "^2.12.0",

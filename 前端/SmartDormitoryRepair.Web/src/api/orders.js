@@ -41,3 +41,13 @@ export const getMaintainers = () => {
 export const assignOrder = (orderId, maintainerId) => {
   return api.post(`/orders/${orderId}/assign`, { maintainerId })
 }
+
+// 🗑️ 删除工单（管理员）
+export const deleteOrder = (orderId) => {
+  return api.delete(`/orders/${orderId}`)
+}
+
+// 🔄 重新指派工单（管理员）
+export const reassignOrder = (orderId, maintainerId) => {
+  return api.put(`/orders/${orderId}/reassign`, { maintainerId })
+}
