@@ -84,6 +84,9 @@ import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus, Search, Refresh, View, User } from '@element-plus/icons-vue'
 import { getOrders } from '../api/orders'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const loading = ref(false)
 const orders = ref([])
@@ -163,7 +166,7 @@ const handleCurrentChange = (val) => {
 
 // 操作
 const handleCreate = () => {
-  ElMessage.info('新建工单功能开发中...')
+  router.push('/orders/create')
 }
 
 const handleView = (row) => {
