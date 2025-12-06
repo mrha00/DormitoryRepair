@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SmartDormitoryRepair.Api.Data;
@@ -50,6 +50,9 @@ var app = builder.Build();
 
 // 使用CORS中间件
 app.UseCors("AllowFrontend");
+
+// 配置静态文件服务
+app.UseStaticFiles(); // 允许访问wwwroot下的文件
 
 // 初始化种子数据
 using (var scope = app.Services.CreateScope())
