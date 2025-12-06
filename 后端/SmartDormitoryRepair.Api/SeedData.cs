@@ -126,6 +126,34 @@ namespace SmartDormitoryRepair.Api
                         Console.WriteLine("UserRole association added successfully.");
                     }
 
+                    // 🔥 强制重置维修工账号（删除旧的，创建新的）
+                    var maintainerNames = new[] { "张师傅", "李师傅", "王师傅", "刘师傅" };
+                    
+                    // 先删除所有现有的维修工账号
+                    var existingMaintainers = context.Users.Where(u => maintainerNames.Contains(u.Username)).ToList();
+                    if (existingMaintainers.Any())
+                    {
+                        context.Users.RemoveRange(existingMaintainers);
+                        context.SaveChanges();
+                        Console.WriteLine($"🗑️ 已删除 {existingMaintainers.Count} 个旧的维修工账号");
+                    }
+                    
+                    // 重新创建维修工账号（使用新生成的密码哈希）
+                    var newPassword = BCrypt.Net.BCrypt.HashPassword("admin123");
+                    Console.WriteLine($"🔑 新密码哈希: {newPassword}");
+                    
+                    foreach (var name in maintainerNames)
+                    {
+                        context.Users.Add(new User
+                        {
+                            Username = name,
+                            PasswordHash = newPassword,
+                            Role = "Maintainer"
+                        });
+                    }
+                    context.SaveChanges();
+                    Console.WriteLine($"✅ 已重新创建 {maintainerNames.Length} 个维修工账号");
+
                     // 添加测试订单数据（如果不存在）
                     if (!context.Orders.Any())
                     {
