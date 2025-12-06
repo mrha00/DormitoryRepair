@@ -72,16 +72,46 @@ namespace SmartDormitoryRepair.Api
                     // 确保至少有一个管理员用户
                     if (!context.Users.Any())
                     {
+                        // admin 用户
                         context.Users.Add(
                             new User
                             {
                                 Username = "admin",
-                                PasswordHash = "$2a$11$KHLIPm3f2AipGAKax9Ym6Oh3x3A23A93WGNCDO/4riexaJWo6Z.xS",
+                                PasswordHash = "$2a$11$KHLIPm3f2AipGAKax9Ym6Oh3x3A23A93WGNCDO/4riexaJWo6Z.xS", // admin123
                                 Role = "Admin"
                             }
                         );
+                        
+                        // 添加维修工测试账号
+                        context.Users.AddRange(
+                            new User
+                            {
+                                Username = "张师傅",
+                                PasswordHash = "$2a$11$KHLIPm3f2AipGAKax9Ym6Oh3x3A23A93WGNCDO/4riexaJWo6Z.xS", // admin123
+                                Role = "Maintainer"
+                            },
+                            new User
+                            {
+                                Username = "李师傅",
+                                PasswordHash = "$2a$11$KHLIPm3f2AipGAKax9Ym6Oh3x3A23A93WGNCDO/4riexaJWo6Z.xS", // admin123
+                                Role = "Maintainer"
+                            },
+                            new User
+                            {
+                                Username = "王师傅",
+                                PasswordHash = "$2a$11$KHLIPm3f2AipGAKax9Ym6Oh3x3A23A93WGNCDO/4riexaJWo6Z.xS", // admin123
+                                Role = "Maintainer"
+                            },
+                            new User
+                            {
+                                Username = "刘师傅",
+                                PasswordHash = "$2a$11$KHLIPm3f2AipGAKax9Ym6Oh3x3A23A93WGNCDO/4riexaJWo6Z.xS", // admin123
+                                Role = "Maintainer"
+                            }
+                        );
+                        
                         context.SaveChanges();
-                        Console.WriteLine("Admin user added successfully.");
+                        Console.WriteLine("Admin user and maintainers added successfully.");
                     }
 
                     // 给admin用户分配Admin角色（如果不存在关联）
