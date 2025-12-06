@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # .NET Core
 *.dll
 *.exe
@@ -43,6 +44,12 @@
 [Dd]ebug*/
 [Dd]ebugPublic/
 [Rr]elease*/
+=======
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+>>>>>>> 449cb294e2224c4b5c5d6ff90262e4e89bc4b958
 [Rr]eleases/
 x64/
 x86/
@@ -51,6 +58,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 
+<<<<<<< HEAD
 # Visual Studio
 .vs/
 **/*.user
@@ -90,11 +98,23 @@ bld/
 /.vscode/
 /.idea/
 /.vsconfig
+=======
+# Visual Studio files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio 2015/2017 cache/options directory
+.vs/
+*.vs/
+>>>>>>> 449cb294e2224c4b5c5d6ff90262e4e89bc4b958
 
 # Rider
 .idea/
 *.DotSettings.user
 
+<<<<<<< HEAD
 # NuGet
 **/packages/
 **/*.nuget.props
@@ -270,3 +290,146 @@ dist/
 *.swp
 *.swo
 >>>>>>> fa4dcf0c07ba7f69b98089d368639297f2dfdc1e
+=======
+# MSTest test Results
+[TestResults]/
+[BuildOutput]/
+
+# NUNIT
+*.VisualState.xml
+TestResult.xml
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# NuGet Packages
+*.nupkg
+packages/
+*.nuget.props
+*.nuget.targets
+
+# Entity Framework
+*.db
+
+# DotNet Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# StyleCop
+StyleCopReport.xml
+
+# Files built by Visual Studio
+*_i.c
+*_p.c
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# Chutzpah Test files
+_Chutzpah*
+
+# Visual C++ build cache
+ipch/
+
+# ReSharper cache
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# TeamCity
+_TeamCity*
+
+# DotCover
+*.dotCover
+
+# NCrunch
+*.ncrunch*
+.*crunch*.local.xml
+nCrunchTemp_*
+
+# MightyMoose
+*.mm.*
+AutoTest.Net/
+
+# Web workbench (sass)
+.sass-cache/
+
+# Installshield output folder
+[Ee]xpress/
+
+# DocProject
+DocProject/buildhelp/
+DocProject/Help/*.HxT
+DocProject/Help/*.HxC
+DocProject/Help/*.hhc
+DocProject/Help/*.hhk
+DocProject/Help/*.hhp
+DocProject/Help/Html2
+DocProject/Help/html
+
+# Click-Once directory
+publish/
+
+# Publish Web Output
+*.Publish.xml
+*.pubxml
+*.pubxml.user
+
+# Microsoft Azure Web App publish settings
+PublishScripts/
+
+# NuGet v3
+.nuget/packages/
+
+# Windows Store app package directories and files
+AppPackages/
+BundleArtifacts/
+Package.StoreAssociation.xml
+_pkginfo.txt
+*.appx
+
+# Visual Studio 2015 installer projects
+*.vdproj
+
+# Visual Studio 2015 template package
+*.vstemplate
+
+# TypeScript compiled output
+*.js
+*.jsx
+
+# node.js
+node_modules/
+
+# macOS
+.DS_Store
+
+# JetBrains Rider
+.idea/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+>>>>>>> 449cb294e2224c4b5c5d6ff90262e4e89bc4b958

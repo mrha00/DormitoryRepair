@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -33,8 +33,22 @@ namespace SmartDormitoryRepair.Api.Controllers
                 return Unauthorized(new { message = "用户名或密码错误" });
             }
 
+            // ✅ 查询用户的角色和权限
+            var permissions = await (from ur in _context.UserRoles
+                                     join rp in _context.RolePermissions on ur.RoleId equals rp.RoleId
+                                     join p in _context.Permissions on rp.PermissionId equals p.Id
+                                     where ur.UserId == user.Id
+                                     select p.Name)
+                                    .Distinct()
+                                    .ToListAsync();
+
             var token = GenerateJwtToken(user.Username, user.Role);
-            return Ok(new { token });
+            
+            return Ok(new { 
+                token, 
+                user = new { user.Id, user.Username, user.Role },
+                permissions  // ✅ 返回权限列表
+            });
         }
 
         [HttpPost("register")]

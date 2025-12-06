@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartDormitoryRepair.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2b93cdecdea747733f67b897ad71f62ce8f4a346")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9bd536a9992a2f75fdc760ad5ceb8b630a0ef2ad")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartDormitoryRepair.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartDormitoryRepair.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

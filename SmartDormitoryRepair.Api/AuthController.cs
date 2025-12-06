@@ -35,10 +35,10 @@ namespace SmartDormitoryRepair.Api.Controllers
 
             // ✅ 查询用户的角色和权限
             var permissions = await (from ur in _context.UserRoles
-                                     join rp in _context.RolePermissions on ur.RoleId equals rp.RoleId
-                                     join p in _context.Permissions on rp.PermissionId equals p.Id
-                                     where ur.UserId == user.Id
-                                     select p.Name)
+                                    join rp in _context.RolePermissions on ur.RoleId equals rp.RoleId
+                                    join p in _context.Permissions on rp.PermissionId equals p.Id
+                                    where ur.UserId == user.Id
+                                    select p.Name)
                                     .Distinct()
                                     .ToListAsync();
 

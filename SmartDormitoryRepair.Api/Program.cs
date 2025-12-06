@@ -11,6 +11,17 @@ var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new Exception("JWT Key未
 var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? throw new Exception("JWT Issuer未配置");
 var jwtAudience = builder.Configuration["Jwt:Audience"] ?? throw new Exception("JWT Audience未配置");
 
+// 添加CORS服务
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("Default"),
@@ -36,6 +47,9 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+// 使用CORS中间件
+app.UseCors("AllowFrontend");
 
 // 初始化种子数据
 using (var scope = app.Services.CreateScope())
