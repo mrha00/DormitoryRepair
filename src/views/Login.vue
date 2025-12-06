@@ -1,24 +1,62 @@
 <template>
-  <router-view />
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="login-header">
+        <el-icon :size="60" color="#409eff"><Tools /></el-icon>
+        <h1>智慧宿舍报修平台</h1>
+        <p>让维修更高效，让生活更美好</p>
+      </div>
+      
+      <el-form :model="form" :rules="rules" ref="formRef" class="login-form">
+        <el-form-item prop="username">
+          <el-input 
+            v-model="form.username" 
+            placeholder="请输入用户名"
+            :prefix-icon="User"
+            size="large"
+          />
+        </el-form-item>
+        
+        <el-form-item prop="password">
+          <el-input 
+            v-model="form.password" 
+            type="password" 
+            placeholder="请输入密码"
+            :prefix-icon="Lock"
+            size="large"
+            @keyup.enter="handleLogin"
+          />
+        </el-form-item>
+        
+        <el-form-item>
+          <el-button 
+            type="primary" 
+            @click="handleLogin" 
+            :loading="loading"
+            size="large"
+            class="login-btn"
+          >
+            登 录
+          </el-button>
+        </el-form-item>
+      </el-form>
+      
+      <div class="login-footer">
+        <el-link type="primary" @click="$message.info('请联系管理员注册账号')">
+          没有账号？去注册
+        </el-link>
+      </div>
+    </div>
+    
+    <div class="login-bg"></div>
+  </div>
 </template>
-
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-}
-</style>
 
 <script setup>
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import { User, Lock, Tools } from '@element-plus/icons-vue'
-import { login } from './api/auth'
+import { login } from '../api/auth'
 
 const formRef = ref()
 const loading = ref(false)
@@ -39,20 +77,7 @@ const handleLogin = async () => {
     
     loading.value = true
     try {
-      const res = await login(form.username, form.password)
-      // 保存到localStorage
-      localStorage.setItem('token', res.data.token)
-      localStorage.setItem('user', JSON.stringify(res.data.user))
-      localStorage.setItem('permissions', JSON.stringify(res.data.permissions))
-      
-      ElMessage.success({
-        message: `欢迎回来，${res.data.user.username}！`,
-        duration: 2000,
-        onClose: () => {
-          // 登录成功后跳转到首页（后面再实现）
-          console.log('登录成功，准备跳转...')
-        }
-      })
+      await login(form.username, form.password)
     } catch (err) {
       ElMessage.error(err.response?.data?.message || '登录失败，请检查用户名和密码')
     } finally {
