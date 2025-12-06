@@ -63,6 +63,7 @@ dist-ssr/
 # SSH密钥 - 重要！
 文档/SSH公钥.txt
 SSH公钥.txt
+github基本信息.md
 *.pem
 *.key
 id_rsa

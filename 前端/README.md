@@ -1,64 +1,81 @@
-# 智慧宿舍报修平台 - 前端应用
+# 前端项目
 
-## 项目结构
-
-```
-前端/
-├── SmartDormitoryRepair.Web/       # Vue 3前端项目
-│   ├── src/                        # 源代码目录
-│   │   ├── api/                    # API调用封装
-│   │   ├── views/                  # 页面组件
-│   │   ├── router/                 # 路由配置
-│   │   └── App.vue                 # 根组件
-│   ├── package.json                # 依赖配置
-│   └── README.md                  # 项目说明文档
-```
+智慧宿舍报修平台的前端应用，基于Vue 3构建的现代化单页应用。
 
 ## 技术栈
 
-- Vue 3 (Composition API)
-- Element Plus UI 组件库
-- Vue Router 路由管理
-- Axios HTTP客户端
-- Vite 构建工具
+- **Vue 3** - 使用Composition API
+- **Element Plus** - 现代化UI组件库
+- **Vue Router** - 单页应用路由管理
+- **Axios** - HTTP客户端
+- **Vite** - 新一代前端构建工具
 
-## 功能特性
+## 快速开始
 
-1. **用户认证**
-   - 登录页面
-   - JWT Token存储与管理
-   - 路由守卫
+### 安装依赖
+```bash
+npm install
+```
 
-2. **工单管理**
-   - 工单列表展示(带分页)
-   - 工单状态筛选
-   - 响应式设计适配移动端
+### 开发模式运行
+```bash
+npm run dev
+```
 
-3. **权限控制**
-   - 基于用户权限的按钮显示/隐藏
-   - 路由级别的访问控制
+### 生产环境构建
+```bash
+npm run build
+```
 
-## 项目结构详解
+## 页面结构
 
-### src/api/
-- `auth.js`: 认证相关API封装
-- `orders.js`: 工单相关API封装
+- 🔐 **登录页** (`/`) - 用户登录界面
+- 📋 **工单列表** (`/orders`) - 工单管理页面
+  - 工单查看（分页）
+  - 工单创建
+  - 工单状态更新
 
-### src/views/
-- `Login.vue`: 登录页面组件
-- `OrderList.vue`: 工单列表页面组件
+## 项目特色
 
-### src/router/
-- `index.js`: Vue Router配置，包含路由守卫
+- ✨ 现代化、简洁优雅的设计风格
+- 🎨 渐变色彩和流畅动画效果
+- 📱 响应式设计，适配多种设备
+- 🔒 JWT Token身份认证
+- 🎯 基于角色的权限控制
 
-## 开发环境搭建
+## 开发说明
 
-1. 安装依赖: `npm install`
-2. 启动开发服务器: `npm run dev`
-3. 构建生产版本: `npm run build`
+### 目录结构
+```
+src/
+├── api/              # API接口封装
+│   ├── auth.js      # 认证相关接口
+│   └── orders.js    # 工单相关接口
+├── router/          # 路由配置
+│   └── index.js     # 路由定义
+├── views/           # 页面组件
+│   ├── Login.vue    # 登录页
+│   └── OrderList.vue # 工单列表页
+├── App.vue          # 根组件
+└── main.js          # 入口文件
+```
 
-## 部署说明
+### API配置
 
-1. 构建项目: `npm run build`
-2. 将dist目录下的文件部署到Web服务器
-3. 配置反向代理指向后端API服务
+API基础地址配置在各个API文件中，默认为：
+```
+http://localhost:5062
+```
+
+如需修改，请编辑 `src/api/auth.js` 和 `src/api/orders.js` 中的 `baseURL`。
+
+## 浏览器支持
+
+- Chrome (推荐)
+- Firefox
+- Safari
+- Edge
+
+## 许可证
+
+本项目仅供学习交流使用。
