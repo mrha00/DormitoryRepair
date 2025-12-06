@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../views/Login.vue'
 import OrderList from '../views/OrderList.vue'
 import OrderCreate from '../views/OrderCreate.vue'
+import OrderDetail from '../views/OrderDetail.vue'
 
 const routes = [
   {
@@ -19,6 +20,12 @@ const routes = [
     path: '/orders/create',
     name: 'OrderCreate',
     component: OrderCreate,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/orders/:id',
+    name: 'OrderDetail',
+    component: OrderDetail,
     meta: { requiresAuth: true }
   }
 ]

@@ -49,7 +49,7 @@
         </el-table-column>
         <el-table-column label="操作" width="180" align="center" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" :icon="View" @click="handleView(row)" />
+            <el-button type="primary" size="small" :icon="View" @click="$router.push(`/orders/${row.id}`)">详情</el-button>
             <el-button 
               v-if="hasPermission('AssignOrder')" 
               type="success" 
