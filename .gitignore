@@ -1,0 +1,147 @@
+# .NET Core
+*.dll
+*.exe
+*.log
+*.pdb
+*.user
+*.userosscache
+*.suo
+*.orig
+*.tmp
+*.pidb
+*.svclog
+*.tlb
+*.tlog
+*.vspscc
+*.vssscc
+*.pidb
+*.resources
+*.cache
+*.sbr
+*.aps
+*.ncb
+*.gpState
+*.filters
+*.wrn
+*.err
+*.bak
+*.min.dep
+*.manifest
+*.lib
+*.rsp
+*.cache
+*.sdf
+*.dbmdl
+*.dbproj.schemaview
+*.pfx
+*.publishproj
+*.snk
+*.unimported
+
+# Build results
+[Dd]ebug*/
+[Dd]ebugPublic/
+[Rr]elease*/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio
+.vs/
+**/*.user
+**/*.userosscache
+**/*.suo
+**/*.orig
+**/*.tmp
+**/*.pidb
+**/*.svclog
+**/*.tlb
+**/*.tlog
+**/*.vspscc
+**/*.vssscc
+**/*.pidb
+**/*.cache
+**/*.sbr
+**/*.aps
+**/*.ncb
+**/*.gpState
+**/*.filters
+**/*.wrn
+**/*.err
+**/*.bak
+**/*.min.dep
+**/*.manifest
+**/*.lib
+**/*.rsp
+**/*.sdf
+**/*.dbmdl
+**/*.dbproj.schemaview
+**/*.pfx
+**/*.publishproj
+**/*.snk
+**/*.unimported
+
+# Visual Studio 2015+ cache/options
+/.vscode/
+/.idea/
+/.vsconfig
+
+# Rider
+.idea/
+*.DotSettings.user
+
+# NuGet
+**/packages/
+**/*.nuget.props
+**/*.nuget.targets
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings
+
+# MSTest
+TestResults/
+
+# NUnit
+*.VisualState.xml
+TestResult.xml
+
+# ASP.NET
+**/App_Data/*
+**/web.config
+
+# EF migrations
+**/Migrations/*
+
+# Mac
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+~*
+.*~
+
+# JetBrains Rider
+*.DotSettings
+*.cr/
+build/
