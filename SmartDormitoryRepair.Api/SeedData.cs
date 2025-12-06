@@ -95,6 +95,41 @@ namespace SmartDormitoryRepair.Api
                         context.SaveChanges();
                         Console.WriteLine("UserRole association added successfully.");
                     }
+
+                    // 添加测试订单数据（如果不存在）
+                    if (!context.Orders.Any())
+                    {
+                        var orders = new Order[]
+                        {
+                            new Order 
+                            { 
+                                Title = "宿舍灯坏了", 
+                                Description = "301宿舍天花板灯不亮，需要更换灯泡", 
+                                Creator = "admin", 
+                                Status = "Pending",
+                                CreateTime = DateTime.Now
+                            },
+                            new Order 
+                            { 
+                                Title = "水龙头漏水", 
+                                Description = "卫生间水龙头滴水，浪费水资源", 
+                                Creator = "admin", 
+                                Status = "Processing",
+                                CreateTime = DateTime.Now
+                            },
+                            new Order 
+                            { 
+                                Title = "门锁损坏", 
+                                Description = "宿舍门锁无法上锁，存在安全隐患", 
+                                Creator = "testuser", 
+                                Status = "Completed",
+                                CreateTime = DateTime.Now
+                            }
+                        };
+                        context.Orders.AddRange(orders);
+                        context.SaveChanges();
+                        Console.WriteLine("Test orders added successfully.");
+                    }
                 }
                 catch (Exception ex)
                 {

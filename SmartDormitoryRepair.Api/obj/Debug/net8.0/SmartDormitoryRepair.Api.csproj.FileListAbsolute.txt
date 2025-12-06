@@ -118,3 +118,5 @@ F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Ap
 F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
 F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\bin\Debug\net8.0\SmartDormitoryRepair.Domain.dll
 F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\bin\Debug\net8.0\SmartDormitoryRepair.Domain.pdb
+F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\bin\Debug\net8.0\package-lock.json
+F:\毕业设计\DormitoryRepair\SmartDormitoryRepair.Api\SmartDormitoryRepair.Api\bin\Debug\net8.0\package.json

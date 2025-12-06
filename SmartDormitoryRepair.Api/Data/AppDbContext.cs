@@ -12,6 +12,7 @@ namespace SmartDormitoryRepair.Api.Data
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
+        public DbSet<Order> Orders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -69,6 +70,16 @@ namespace SmartDormitoryRepair.Api.Data
                     .WithMany()
                     .HasForeignKey(e => e.PermissionId)
                     .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Order配置
+            modelBuilder.Entity<Order>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Title).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Description).IsRequired().HasMaxLength(500);
+                entity.Property(e => e.Creator).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
             });
         }
     }
