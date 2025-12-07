@@ -1,4 +1,4 @@
-﻿﻿﻿﻿using Microsoft.AspNetCore.Mvc;
+﻿﻿﻿﻿﻿﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -56,13 +56,52 @@ namespace SmartDormitoryRepair.Api.Controllers
             }
 
             // ✅ 查询用户的角色和权限
-            var permissions = await (from ur in _context.UserRoles
+            var permissions = new List<string>();
+            
+            // 方法1：通过UserRoles表查询（用于有UserRoles关联的用户）
+            var permissionsFromUserRoles = await (from ur in _context.UserRoles
                                     join rp in _context.RolePermissions on ur.RoleId equals rp.RoleId
                                     join p in _context.Permissions on rp.PermissionId equals p.Id
                                     where ur.UserId == user.Id
                                     select p.Name)
                                     .Distinct()
                                     .ToListAsync();
+            permissions.AddRange(permissionsFromUserRoles);
+            
+            // 方法2：根据User.Role字段查询（用于直接设置角色的用户）
+            if (user.Role == "Admin")
+            {
+                // 管理员拥有所有权限
+                permissions = new List<string> 
+                { 
+                    "CreateOrder", 
+                    "ViewOwnOrders", 
+                    "ViewAllOrders", 
+                    "ManageUsers", 
+                    "AssignOrder",
+                    "ProcessOrder",
+                    "CompleteOrder"
+                };
+            }
+            else if (user.Role == "Maintainer")
+            {
+                // 维修工可以处理和完成工单
+                permissions = new List<string> 
+                { 
+                    "ViewOwnOrders", 
+                    "ProcessOrder", 
+                    "CompleteOrder" 
+                };
+            }
+            else if (user.Role == "Student")
+            {
+                // 学生可以创建和查看自己的工单
+                permissions = new List<string> 
+                { 
+                    "CreateOrder", 
+                    "ViewOwnOrders" 
+                };
+            }
 
             var token = GenerateJwtToken(user.Username, user.Role);
             

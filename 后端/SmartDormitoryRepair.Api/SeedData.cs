@@ -37,7 +37,9 @@ namespace SmartDormitoryRepair.Api
                             new Permission { Name = "ViewOwnOrders", Description = "查看自己的工单" },
                             new Permission { Name = "ViewAllOrders", Description = "查看所有工单" },
                             new Permission { Name = "ManageUsers", Description = "管理用户" },
-                            new Permission { Name = "AssignOrder", Description = "指派工单" }
+                            new Permission { Name = "AssignOrder", Description = "指派工单" },
+                            new Permission { Name = "ProcessOrder", Description = "处理工单（开始维修）" },
+                            new Permission { Name = "CompleteOrder", Description = "完成工单（标记完成）" }
                         };
                         context.Permissions.AddRange(permissions);
                         context.SaveChanges();

@@ -19,6 +19,11 @@
           </el-descriptions-item>
           <el-descriptions-item label="报修标题">{{ order.title }}</el-descriptions-item>
           <el-descriptions-item label="报修人">{{ order.creator }}</el-descriptions-item>
+          <el-descriptions-item label="维修工">
+            <span :class="order.assignedToName ? 'assigned-worker' : 'unassigned-worker'">
+              {{ order.assignedToName || '未分配' }}
+            </span>
+          </el-descriptions-item>
           <el-descriptions-item label="宿舍位置">{{ order.location }}</el-descriptions-item>
           <el-descriptions-item label="报修时间">{{ formatDate(order.createTime) }}</el-descriptions-item>
         </el-descriptions>
@@ -102,7 +107,7 @@ const assignDialogRef = ref(null)
 const orderId = computed(() => parseInt(route.params.id))
 
 const hasPermission = (permission) => {
-  const permissions = JSON.parse(localStorage.getItem('permissions') || '[]')
+  const permissions = JSON.parse(sessionStorage.getItem('permissions') || '[]')
   return permissions.includes(permission)
 }
 
@@ -273,6 +278,25 @@ onMounted(loadOrder)
 .action-section .el-button {
   min-width: 150px;
   font-weight: 500;
+}
+
+/* 维修工显示样式 */
+.assigned-worker {
+  color: #409EFF;
+  font-weight: 600;
+  padding: 4px 12px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.unassigned-worker {
+  color: #909399;
+  font-style: italic;
+  padding: 4px 12px;
+  background: #f5f7fa;
+  border-radius: 4px;
+  display: inline-block;
 }
 
 /* 响应式设计 */

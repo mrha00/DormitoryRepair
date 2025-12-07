@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
@@ -75,7 +74,30 @@ namespace SmartDormitoryRepair.Api.Controllers
                 return Forbid("无权查看他人工单");
             }
             
-            return Ok(order);
+            // 🔍 查询维修工姓名
+            string? assignedToName = null;
+            if (order.AssignedTo.HasValue)
+            {
+                var maintainer = await _context.Users.FindAsync(order.AssignedTo.Value);
+                assignedToName = maintainer?.Username;
+            }
+            
+            // 📦 返回包含维修工姓名的数据
+            var result = new
+            {
+                order.Id,
+                order.Title,
+                order.Description,
+                order.Location,
+                order.Creator,
+                order.Status,
+                order.ImageUrl,
+                order.CreateTime,
+                order.AssignedTo,
+                AssignedToName = assignedToName // 维修工姓名
+            };
+            
+            return Ok(result);
         }
 
         [HttpPost]
@@ -114,6 +136,14 @@ namespace SmartDormitoryRepair.Api.Controllers
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
+            // 推送通知给管理员：有新工单提交
+            var admins = await _context.Users.Where(u => u.Role == "Admin").ToListAsync();
+            foreach (var admin in admins)
+            {
+                await _hubContext.Clients.Group($"user_{admin.Username}")
+                    .SendAsync("ReceiveNotification", $"有新工单提交：{order.Title}", new { orderId = order.Id, title = order.Title });
+            }
+
             return Ok(new { orderId = order.Id, message = "工单创建成功", imageUrl });
         }
 
@@ -130,6 +160,10 @@ namespace SmartDormitoryRepair.Api.Controllers
             
             order.Status = dto.Status;
             await _context.SaveChangesAsync();
+            
+            // 推送通知给工单创建者：状态已更新
+            await _hubContext.Clients.Group($"user_{order.Creator}")
+                .SendAsync("ReceiveNotification", $"您的工单《{order.Title}》状态已更新为：{GetStatusText(dto.Status)}", new { orderId = order.Id, title = order.Title });
             
             return Ok(new { message = "状态更新成功" });
         }
@@ -252,6 +286,17 @@ namespace SmartDormitoryRepair.Api.Controllers
                 { "Completed", Array.Empty<string>() }
             };
             return allowed.ContainsKey(current) && allowed[current].Contains(next);
+        }
+
+        private string GetStatusText(string status)
+        {
+            return status switch
+            {
+                "Pending" => "待处理",
+                "Processing" => "处理中",
+                "Completed" => "已完成",
+                _ => status
+            };
         }
     }
 

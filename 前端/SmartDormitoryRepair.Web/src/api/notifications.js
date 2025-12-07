@@ -7,7 +7,7 @@ const api = axios.create({
 
 // 添加JWT令牌拦截器
 api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token')
+  const token = sessionStorage.getItem('token')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }

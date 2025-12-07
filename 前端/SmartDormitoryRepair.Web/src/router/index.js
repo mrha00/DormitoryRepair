@@ -4,6 +4,7 @@ import OrderList from '../views/OrderList.vue'
 import OrderCreate from '../views/OrderCreate.vue'
 import OrderDetail from '../views/OrderDetail.vue'
 import NotificationCenter from '../views/NotificationCenter.vue'
+import notificationService from '../services/signalr' // ✅ 导入SignalR服务
 
 const routes = [
   {
@@ -43,10 +44,19 @@ const router = createRouter({
 })
 
 // 路由守卫
-router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token')
+router.beforeEach(async (to, from, next) => {
+  const token = sessionStorage.getItem('token')
+  
   if (to.meta.requiresAuth && !token) {
+    // 未登录，跳转到登录页
     next('/')
+  } else if (to.meta.requiresAuth && token) {
+    // ✅ 已登录，确保SignalR连接
+    if (!notificationService.connection || notificationService.connection.state === 'Disconnected') {
+      console.log('🔌 检测到SignalR未连接，自动启动...')
+      await notificationService.startConnection()
+    }
+    next()
   } else {
     next()
   }
