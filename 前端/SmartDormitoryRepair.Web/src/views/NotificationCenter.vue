@@ -152,7 +152,7 @@ const filterType = ref('all')
 const unreadCount = ref(0)
 
 // 👤 获取当前用户信息
-const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
+const currentUser = JSON.parse(sessionStorage.getItem('user') || '{}')
 
 // 👤 获取用户头像显示（取用户名首字符）
 const getUserAvatar = () => {

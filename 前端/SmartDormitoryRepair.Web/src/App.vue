@@ -1,5 +1,13 @@
 <template>
-  <router-view />
+  <div id="app">
+    <!-- 右上角连接状态 - 只在登录后且连接完成后显示 -->
+    <div v-if="shouldShowStatus && !isConnecting" class="connection-status" :class="{ connected: isConnected }">
+      <el-tooltip :content="connectionText">
+        <span class="status-dot"></span>
+      </el-tooltip>
+    </div>
+    <router-view />
+  </div>
 </template>
 
 <style>
@@ -12,142 +20,114 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
-</style>
 
-<script setup>
-import { ref, reactive } from 'vue'
-import { ElMessage } from 'element-plus'
-import { User, Lock, Tools } from '@element-plus/icons-vue'
-import { login } from './api/auth'
-
-const formRef = ref()
-const loading = ref(false)
-
-const form = reactive({
-  username: 'admin',
-  password: '123456'
-})
-
-const rules = reactive({
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
-})
-
-const handleLogin = async () => {
-  await formRef.value.validate(async (valid) => {
-    if (!valid) return
-    
-    loading.value = true
-    try {
-      const res = await login(form.username, form.password)
-      // 保存到localStorage
-      localStorage.setItem('token', res.data.token)
-      localStorage.setItem('user', JSON.stringify(res.data.user))
-      localStorage.setItem('permissions', JSON.stringify(res.data.permissions))
-      
-      ElMessage.success({
-        message: `欢迎回来，${res.data.user.username}！`,
-        duration: 2000,
-        onClose: () => {
-          // 登录成功后跳转到首页（后面再实现）
-          console.log('登录成功，准备跳转...')
-        }
-      })
-    } catch (err) {
-      ElMessage.error(err.response?.data?.message || '登录失败，请检查用户名和密码')
-    } finally {
-      loading.value = false
-    }
-  })
-}
-</script>
-
-<style scoped>
-.login-wrapper {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
+.connection-status {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
 }
 
-.login-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  z-index: -1;
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #f56c6c;
+  display: inline-block;
+  animation: pulse-red 2s infinite;
 }
 
-.login-card {
-  width: 420px;
-  padding: 40px 30px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+.connection-status.connected .status-dot {
+  background: #67c23a;
+  animation: pulse-green 2s infinite; /* ✅ 绿色也有扩散动画 */
 }
 
-.login-header {
-  text-align: center;
-  margin-bottom: 40px;
+/* 红色点的扩散动画 */
+@keyframes pulse-red {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 108, 108, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(245, 108, 108, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 108, 108, 0);
+  }
 }
 
-.login-header h1 {
-  margin: 15px 0 8px;
-  font-size: 28px;
-  color: #303133;
-  font-weight: 600;
-}
-
-.login-header p {
-  margin: 0;
-  color: #909399;
-  font-size: 14px;
-}
-
-.login-form {
-  margin-bottom: 20px;
-}
-
-.login-form :deep(.el-input__wrapper) {
-  box-shadow: 0 0 0 1px #dcdfe6;
-  background: #f5f7fa;
-}
-
-.login-form :deep(.el-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px #409eff;
-}
-
-.login-btn {
-  width: 100%;
-  height: 44px;
-  font-size: 16px;
-  letter-spacing: 2px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  transition: all 0.3s;
-}
-
-.login-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.login-footer {
-  text-align: center;
-  font-size: 14px;
-}
-
-/* 响应式设计 */
-@media (max-width: 480px) {
-  .login-card {
-    width: 90%;
-    padding: 30px 20px;
+/* 绿色点的扩散动画 */
+@keyframes pulse-green {
+  0% {
+    box-shadow: 0 0 0 0 rgba(103, 194, 58, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(103, 194, 58, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(103, 194, 58, 0);
   }
 }
 </style>
+
+<script setup>
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import * as signalR from '@microsoft/signalr'
+import notificationService from './services/signalr'
+
+const route = useRoute()
+const isConnected = ref(false)
+const connectionText = ref('连接中...')
+const isConnecting = ref(false) // ✅ 初始为false，刷新后立即显示状态
+let reconnectInterval = null // ✅ 重连检测定时器
+
+// 监听路由变化，在非登录页面才显示连接状态
+const shouldShowStatus = ref(false)
+
+watch(() => route.path, (newPath) => {
+  // 只在登录后的页面显示连接状态（不在登录页显示）
+  shouldShowStatus.value = newPath !== '/' && newPath !== '/login'
+}, { immediate: true })
+
+onMounted(() => {
+  console.log('🔧 App.vue 已加载')
+  
+  // 设置连接状态回调
+  notificationService.onConnectionStateChanged = (connected, text, connecting = false) => {
+    console.log('🔔 收到状态变化:', connected, text, '连接中:', connecting)
+    isConnected.value = connected
+    connectionText.value = text
+    isConnecting.value = connecting // ✅ 使用传入的connecting参数
+  }
+  console.log('✅ 状态回调已设置')
+  
+  // 如果已经连接，直接更新状态
+  if (notificationService.connection?.state === signalR.HubConnectionState.Connected) {
+    console.log('✅ 检测到已存在的连接')
+    isConnected.value = true
+    connectionText.value = '已连接'
+    isConnecting.value = false
+  }
+  
+  // ✅ 每5秒检查一次连接状态，如果断开则尝试重连
+  reconnectInterval = setInterval(async () => {
+    const token = sessionStorage.getItem('token')
+    if (token && notificationService.connection?.state === signalR.HubConnectionState.Disconnected) {
+      console.log('🔍 检测到SignalR断开，尝试重连...')
+      await notificationService.startConnection()
+    }
+  }, 5000) // 5秒检测一次
+})
+
+onUnmounted(() => {
+  // 清理回调
+  notificationService.onConnectionStateChanged = null
+  
+  // ✅ 清理重连定时器
+  if (reconnectInterval) {
+    clearInterval(reconnectInterval)
+    reconnectInterval = null
+  }
+})
+</script>
+

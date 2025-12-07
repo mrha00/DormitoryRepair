@@ -210,7 +210,7 @@ const searchForm = ref({
 })
 
 // 👤 获取当前用户信息
-const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
+const currentUser = JSON.parse(sessionStorage.getItem('user') || '{}')
 const currentUserRole = currentUser.role || ''
 
 // 👤 获取用户头像显示（取用户名首字符）
@@ -241,7 +241,7 @@ const handleCommand = (command) => {
 
 // 权限检查
 const hasPermission = (permission) => {
-  const permissions = JSON.parse(localStorage.getItem('permissions') || '[]')
+  const permissions = JSON.parse(sessionStorage.getItem('permissions') || '[]')
   return permissions.includes(permission)
 }
 
