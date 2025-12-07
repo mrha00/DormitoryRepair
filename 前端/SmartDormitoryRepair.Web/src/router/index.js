@@ -47,8 +47,11 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const token = sessionStorage.getItem('token')
   
+  console.log('🔍 路由守卫:', to.path, 'requiresAuth:', to.meta.requiresAuth, 'hasToken:', !!token)
+  
   if (to.meta.requiresAuth && !token) {
     // 未登录，跳转到登录页
+    console.log('⛔ 未登录，跳转到登录页')
     next('/')
   } else if (to.meta.requiresAuth && token) {
     // ✅ 已登录，确保SignalR连接

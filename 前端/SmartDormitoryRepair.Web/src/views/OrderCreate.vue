@@ -125,4 +125,81 @@ const handleSubmit = async () => {
   color: #909399;
   margin-top: 5px;
 }
+
+/* 📱 移动端深度优化 */
+@media (max-width: 768px) {
+  .create-container {
+    padding: 10px;
+  }
+  
+  .create-card {
+    border-radius: 8px;
+  }
+  
+  .create-card :deep(.el-card__header) {
+    padding: 15px;
+  }
+  
+  .create-card :deep(.el-card__header h2) {
+    font-size: 18px;
+    margin: 0;
+  }
+  
+  .create-form {
+    padding: 10px 0;
+  }
+  
+  /* 表单标签垂直布局 */
+  .create-form :deep(.el-form-item) {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+  }
+  
+  .create-form :deep(.el-form-item__label) {
+    width: 100% !important;
+    text-align: left;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #303133;
+  }
+  
+  .create-form :deep(.el-form-item__content) {
+    margin-left: 0 !important;
+  }
+  
+  /* 按钮全宽 */
+  .create-form :deep(.el-form-item:last-child) {
+    margin-top: 25px;
+  }
+  
+  .create-form :deep(.el-form-item:last-child .el-button) {
+    width: 100%;
+    margin-bottom: 10px;
+    height: 44px;
+    font-size: 15px;
+  }
+  
+  /* 上传组件优化 */
+  .create-form :deep(.el-upload-list--picture-card) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+  }
+  
+  .create-form :deep(.el-upload--picture-card) {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .create-form :deep(.el-upload-list__item) {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .upload-tip {
+    font-size: 11px;
+  }
+}
 </style>

@@ -95,7 +95,7 @@
         </el-form>
       </div>
 
-      <!-- 工单表格 -->
+      <!-- 工单表格（桌面端） -->
       <el-table 
         :data="orders" 
         v-loading="loading"
@@ -168,6 +168,79 @@
           </template>
         </el-table-column>
       </el-table>
+
+      <!-- 📱 移动端卡片布局 -->
+      <div class="mobile-order-list" v-loading="loading">
+        <div v-if="orders.length === 0" style="padding: 40px; text-align: center; color: #909399;">
+          暂无工单数据
+        </div>
+        <div 
+          v-for="order in orders" 
+          :key="order.id" 
+          class="mobile-order-item"
+        >
+          <div class="mobile-order-header">
+            <span class="mobile-order-id">#{{ order.id }}</span>
+            <el-tag :type="getStatusType(order.status)" size="large">
+              {{ getStatusText(order.status) }}
+            </el-tag>
+          </div>
+          
+          <div class="mobile-order-body">
+            <div class="mobile-info-row">
+              <span class="mobile-info-label">📋 标题</span>
+              <span class="mobile-info-value">{{ order.title }}</span>
+            </div>
+            <div class="mobile-info-row" v-if="currentUserRole !== 'Student'">
+              <span class="mobile-info-label">👤 报修人</span>
+              <span class="mobile-info-value">{{ order.creator }}</span>
+            </div>
+            <div class="mobile-info-row">
+              <span class="mobile-info-label">📅 时间</span>
+              <span class="mobile-info-value">{{ formatDateTime(order.createTime) }}</span>
+            </div>
+          </div>
+          
+          <div class="mobile-order-actions">
+            <el-button 
+              type="primary" 
+              size="default" 
+              @click="$router.push(`/orders/${order.id}`)"
+            >
+              📄 详情
+            </el-button>
+            
+            <!-- 👑 管理员操作 -->
+            <template v-if="currentUserRole === 'Admin'">
+              <el-dropdown 
+                @command="(cmd) => handleAdminAction(cmd, order)" 
+                trigger="click"
+                style="flex: 1;"
+              >
+                <el-button type="warning" size="default" style="width: 100%">
+                  ⚙️ 管理 <el-icon class="el-icon--right"><arrow-down /></el-icon>
+                </el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item command="changeStatus">
+                      🔄 修改状态
+                    </el-dropdown-item>
+                    <el-dropdown-item command="reassign" v-if="order.assignedTo">
+                      🔧 更换维修工
+                    </el-dropdown-item>
+                    <el-dropdown-item command="assign" v-else>
+                      👤 指派维修工
+                    </el-dropdown-item>
+                    <el-dropdown-item command="delete" divided>
+                      🗑️ 删除工单
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+          </div>
+        </div>
+      </div>
 
       <!-- 分页 -->
       <div class="pagination">
@@ -682,21 +755,155 @@ onBeforeUnmount(() => {
   justify-content: flex-end;
 }
 
-/* 响应式 */
+/* 📱 移动端深度优化 */
 @media (max-width: 768px) {
+  .order-container {
+    padding: 10px;
+  }
+  
+  .card-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  
+  .card-header h2 {
+    font-size: 20px;
+    text-align: center;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .header-actions > .el-button {
+    width: 100%;
+  }
+  
+  /* 👤 用户下拉菜单移动端优化 */
+  .user-dropdown {
+    width: 100%;
+    justify-content: center;
+    padding: 8px 15px;
+  }
+  
+  .username {
+    max-width: 150px;
+  }
+  
+  .search-bar {
+    padding: 10px;
+  }
+  
   .search-form {
     flex-direction: column;
     align-items: stretch;
   }
   
-  .card-header {
-    flex-direction: column;
-    gap: 15px;
+  .search-form .el-form-item {
+    margin-bottom: 12px;
+    margin-right: 0;
+  }
+  
+  .search-form :deep(.el-form-item__label) {
+    width: auto !important;
+    margin-bottom: 5px;
+  }
+  
+  .search-form :deep(.el-form-item__content) {
+    margin-left: 0 !important;
+  }
+  
+  /* 📋 表格移动端卡片布局 */
+  .order-table {
+    display: none;
+  }
+  
+  .order-card::after {
+    content: '';
+    display: block;
   }
 }
 
-/* 🎨 单选按钮选中样式增强 */
-:deep(.el-radio.is-checked) {
-  background-color: #ecf5ff;
+/* 📱 移动端卡片布局 */
+@media (max-width: 768px) {
+  .mobile-order-list {
+    display: block;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-order-list {
+    display: none;
+  }
+}
+
+.mobile-order-item {
+  margin-bottom: 15px;
+  padding: 15px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.mobile-order-item:active {
+  transform: scale(0.98);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.mobile-order-id {
+  font-size: 14px;
+  color: #909399;
+  font-weight: 600;
+}
+
+.mobile-order-body {
+  margin-bottom: 12px;
+}
+
+.mobile-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.mobile-info-label {
+  color: #909399;
+  margin-right: 10px;
+}
+
+.mobile-info-value {
+  color: #303133;
+  font-weight: 500;
+  text-align: right;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-order-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #ebeef5;
+}
+
+.mobile-order-actions .el-button {
+  flex: 1;
 }
 </style>

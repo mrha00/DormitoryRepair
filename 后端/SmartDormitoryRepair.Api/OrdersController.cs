@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 using SmartDormitoryRepair.Api.Data;
 using SmartDormitoryRepair.Api.Hubs;
+using SmartDormitoryRepair.Api.Services;
 using SmartDormitoryRepair.Domain;
 using SmartDormitoryRepair.Domain.DTOs;
 
@@ -16,11 +17,16 @@ namespace SmartDormitoryRepair.Api.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IHubContext<NotificationHub> _hubContext;
+        private readonly CacheService _cache;
 
-        public OrdersController(AppDbContext context, IHubContext<NotificationHub> hubContext)
+        public OrdersController(
+            AppDbContext context, 
+            IHubContext<NotificationHub> hubContext,
+            CacheService cache)
         {
             _context = context;
             _hubContext = hubContext;
+            _cache = cache;
         }
 
         [HttpGet]
@@ -28,8 +34,19 @@ namespace SmartDormitoryRepair.Api.Controllers
             [FromQuery] int page = 1, 
             [FromQuery] int pageSize = 10, 
             [FromQuery] string? status = null,
-            [FromQuery] bool assignedToMe = false) // 👥 新增参数
+            [FromQuery] bool assignedToMe = false)
         {
+            // 🚀 生成缓存键（根据查询参数）
+            var currentUsername = User.Identity?.Name ?? "anonymous";
+            var cacheKey = $"orders:{currentUsername}:page{page}:size{pageSize}:status{status}:assigned{assignedToMe}";
+            
+            // 🚀 尝试从缓存获取
+            var cachedResult = _cache.Get<object>(cacheKey);
+            if (cachedResult != null)
+            {
+                return Ok(cachedResult);
+            }
+            
             var query = _context.Orders.AsQueryable();
 
             if (!string.IsNullOrEmpty(status))
@@ -40,13 +57,11 @@ namespace SmartDormitoryRepair.Api.Controllers
             // 👥 如果请求只看分配给自己的工单
             if (assignedToMe)
             {
-                var currentUsername = User.Identity?.Name;
                 if (!string.IsNullOrEmpty(currentUsername))
                 {
                     var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == currentUsername);
                     if (currentUser != null)
                     {
-                        // 👥 维修工：显示指派给自己的工单 或 自己创建的工单
                         query = query.Where(o => o.AssignedTo == currentUser.Id || o.Creator == currentUsername);
                     }
                 }
@@ -59,7 +74,12 @@ namespace SmartDormitoryRepair.Api.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
-            return Ok(new { items, total, page, pageSize });
+            var result = new { items, total, page, pageSize };
+            
+            // 🚀 缓存10秒（热点数据）
+            _cache.Set(cacheKey, result, TimeSpan.FromSeconds(10));
+            
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
@@ -135,6 +155,9 @@ namespace SmartDormitoryRepair.Api.Controllers
 
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
+            
+            // 🚀 清除缓存（简单实现，生产环境建议Redis）
+            _cache.RemoveByPrefix("orders:");
 
             // 推送通知给管理员：有新工单提交
             var admins = await _context.Users.Where(u => u.Role == "Admin").ToListAsync();
@@ -161,6 +184,9 @@ namespace SmartDormitoryRepair.Api.Controllers
             order.Status = dto.Status;
             await _context.SaveChangesAsync();
             
+            // 🚀 清除缓存
+            _cache.RemoveByPrefix("orders:");
+            
             // 推送通知给工单创建者：状态已更新
             await _hubContext.Clients.Group($"user_{order.Creator}")
                 .SendAsync("ReceiveNotification", $"您的工单《{order.Title}》状态已更新为：{GetStatusText(dto.Status)}", new { orderId = order.Id, title = order.Title });
@@ -172,10 +198,20 @@ namespace SmartDormitoryRepair.Api.Controllers
         [Authorize(Roles = "Admin,Manager")]
         public async Task<ActionResult> GetMaintainers()
         {
-            var maintainers = await _context.Users
-                .Where(u => u.Role == "Maintainer")
-                .Select(u => new { u.Id, u.Username })
-                .ToListAsync();
+            // 🚀 维修工列表缓存30分钟（人员变动不频繁）
+            const string cacheKey = "maintainers:list";
+            
+            var maintainers = await _cache.GetOrCreateAsync(
+                cacheKey,
+                async () =>
+                {
+                    return await _context.Users
+                        .Where(u => u.Role == "Maintainer")
+                        .Select(u => new { u.Id, u.Username })
+                        .ToListAsync();
+                },
+                TimeSpan.FromMinutes(30)
+            );
             
             return Ok(maintainers);
         }
@@ -207,6 +243,9 @@ namespace SmartDormitoryRepair.Api.Controllers
             _context.Notifications.Add(notification);
             
             await _context.SaveChangesAsync();
+            
+            // 🚀 清除缓存
+            _cache.RemoveByPrefix("orders:");
             
             // ✅ 推送实时通知给维修工
             var message = $"您有新的工单待处理：{order.Title}";

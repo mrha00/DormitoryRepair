@@ -299,32 +299,101 @@ onMounted(loadOrder)
   display: inline-block;
 }
 
-/* 响应式设计 */
+/* 📱 移动端深度优化 */
 @media (max-width: 768px) {
   .detail-container {
     padding: 10px;
   }
   
+  .detail-card {
+    border-radius: 8px;
+  }
+  
   .card-header {
     flex-direction: column;
-    gap: 15px;
-    align-items: flex-start;
+    gap: 12px;
+    align-items: stretch;
   }
   
   .card-header h2 {
-    font-size: 20px;
+    font-size: 18px;
+    text-align: center;
   }
   
+  .card-header .el-button {
+    width: 100%;
+  }
+  
+  .order-info {
+    gap: 20px;
+  }
+  
+  /* 描述表单元优化 */
   .info-descriptions {
-    font-size: 14px;
+    font-size: 13px;
   }
   
+  .info-descriptions :deep(.el-descriptions__label) {
+    width: 80px;
+    font-size: 13px;
+  }
+  
+  .info-descriptions :deep(.el-descriptions__content) {
+    font-size: 13px;
+  }
+  
+  /* 单列布局 */
+  .info-descriptions :deep(.el-descriptions__body) {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .info-descriptions :deep(.el-descriptions__row) {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* 问题描述区域 */
+  .description-section,
+  .image-section,
+  .action-section {
+    padding: 15px;
+  }
+  
+  .description-section h3,
+  .image-section h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .description-section p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  
+  /* 图片优化 */
+  .order-image {
+    max-height: 300px;
+  }
+  
+  /* 按钮区域 */
   .action-section {
     flex-direction: column;
+    gap: 12px;
   }
   
   .action-section .el-button {
     width: 100%;
+    min-width: auto;
+    height: 44px;
+    font-size: 15px;
+  }
+  
+  /* 维修工显示样式 */
+  .assigned-worker,
+  .unassigned-worker {
+    font-size: 13px;
+    padding: 3px 10px;
   }
 }
 </style>

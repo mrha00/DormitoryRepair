@@ -1,5 +1,15 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+
 namespace SmartDormitoryRepair.Domain
 {
+    /// <summary>
+    /// 工单实体
+    /// 性能优化：添加复合索引 (Status, CreateTime)
+    /// </summary>
+    [Index(nameof(Status), nameof(CreateTime))] // 🚀 复合索引：优化状态+时间查询
+    [Index(nameof(AssignedTo))] // 🚀 单列索引：优化维修工查询
+    [Index(nameof(Creator))] // 🚀 单列索引：优化创建者查询
     public class Order
     {
         public int Id { get; set; }

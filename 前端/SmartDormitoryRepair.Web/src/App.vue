@@ -67,6 +67,94 @@ body {
     box-shadow: 0 0 0 0 rgba(103, 194, 58, 0);
   }
 }
+
+/* 📱 全局移动端优化 */
+@media (max-width: 768px) {
+  /* 禁用移动端双击放大 */
+  * {
+    touch-action: manipulation;
+  }
+  
+  /* 优化滚动体验 */
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Element Plus 组件移动端优化 */
+  .el-message-box {
+    width: 90% !important;
+    max-width: 400px;
+  }
+  
+  .el-dialog {
+    width: 90% !important;
+    margin-top: 15vh !important;
+  }
+  
+  .el-drawer {
+    width: 85% !important;
+  }
+  
+  /* 分页器移动端优化 */
+  .el-pagination {
+    padding: 10px 0;
+  }
+  
+  .el-pagination .btn-prev,
+  .el-pagination .btn-next,
+  .el-pagination .el-pager li {
+    min-width: 32px;
+    height: 32px;
+    line-height: 32px;
+    font-size: 14px;
+  }
+  
+  /* 表单项优化 */
+  .el-form-item {
+    margin-bottom: 18px;
+  }
+  
+  /* 输入框优化 */
+  .el-input__inner,
+  .el-textarea__inner {
+    font-size: 16px !important; /* 防止iOS自动缩放 */
+  }
+  
+  /* 按钮优化 */
+  .el-button {
+    min-height: 40px;
+    padding: 10px 15px;
+  }
+  
+  /* 卡片优化 */
+  .el-card {
+    border-radius: 8px;
+  }
+  
+  .el-card__header {
+    padding: 15px;
+  }
+  
+  .el-card__body {
+    padding: 15px;
+  }
+  
+  /* 下拉菜单优化 */
+  .el-dropdown-menu {
+    max-width: 90vw;
+  }
+  
+  /* 连接状态指示器移动端位置 */
+  .connection-status {
+    top: 10px;
+    right: 10px;
+  }
+  
+  .status-dot {
+    width: 10px;
+    height: 10px;
+  }
+}
 </style>
 
 <script setup>

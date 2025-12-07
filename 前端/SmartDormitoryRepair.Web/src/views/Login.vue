@@ -168,11 +168,43 @@ const handleLogin = async () => {
   font-size: 14px;
 }
 
-/* 响应式设计 */
+/* 📱 移动端深度优化 */
+@media (max-width: 768px) {
+  .login-wrapper {
+    padding: 20px;
+  }
+  
+  .login-card {
+    width: 100%;
+    padding: 30px 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .login-header h1 {
+    font-size: 22px;
+  }
+  
+  .login-header p {
+    font-size: 13px;
+  }
+  
+  .login-btn {
+    height: 48px;
+    font-size: 15px;
+  }
+}
+
 @media (max-width: 480px) {
   .login-card {
-    width: 90%;
-    padding: 30px 20px;
+    padding: 25px 15px;
+  }
+  
+  .login-header {
+    margin-bottom: 30px;
+  }
+  
+  .login-header h1 {
+    font-size: 20px;
   }
 }
 </style>

@@ -506,19 +506,135 @@ onMounted(() => {
   justify-content: flex-end;
 }
 
+/* 📱 移动端深度优化 */
 @media (max-width: 768px) {
+  .notification-center {
+    padding: 10px;
+  }
+  
+  .notification-card {
+    border-radius: 8px;
+  }
+  
   .card-header {
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
     align-items: stretch;
+  }
+  
+  .card-header h2 {
+    font-size: 18px;
+    text-align: center;
+    margin: 0;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+  
+  .header-actions > .el-button {
+    width: 100%;
+  }
+  
+  /* 👤 用户下拉菜单 */
+  .user-dropdown {
+    width: 100%;
+    justify-content: center;
+    padding: 8px 15px;
+  }
+  
+  .username {
+    max-width: 150px;
+  }
+  
+  /* 筛选栏 */
+  .filter-bar {
+    padding: 12px;
+  }
+  
+  .filter-bar :deep(.el-radio-group) {
+    display: flex;
+    width: 100%;
+  }
+  
+  .filter-bar :deep(.el-radio-button) {
+    flex: 1;
+  }
+  
+  .filter-bar :deep(.el-radio-button__inner) {
+    width: 100%;
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+  
+  /* 消息列表 */
+  .notification-list {
+    min-height: 200px;
   }
   
   .notification-item {
     flex-direction: column;
+    padding: 12px;
+    gap: 10px;
+  }
+  
+  .notification-icon {
+    font-size: 20px;
+    margin-right: 0;
+    margin-bottom: 5px;
+  }
+  
+  .notification-content {
+    width: 100%;
+  }
+  
+  .notification-title {
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+  
+  .notification-message {
+    font-size: 13px;
+    white-space: normal;
+    line-height: 1.5;
+  }
+  
+  .notification-time {
+    font-size: 11px;
+    margin-top: 5px;
   }
   
   .notification-actions {
-    margin-top: 10px;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #ebeef5;
+  }
+  
+  .notification-actions .el-button {
+    flex: 1;
+  }
+  
+  /* 分页 */
+  .pagination {
+    margin-top: 15px;
+  }
+  
+  .pagination :deep(.el-pagination) {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  
+  .pagination :deep(.el-pagination__sizes) {
+    margin: 0;
+  }
+  
+  .pagination :deep(.el-pagination__jump) {
+    margin-left: 0;
   }
 }
 </style>
