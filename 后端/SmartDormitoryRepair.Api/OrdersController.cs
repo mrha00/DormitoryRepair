@@ -121,27 +121,9 @@ namespace SmartDormitoryRepair.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateOrder([FromForm] CreateOrderDto dto, IFormFile? image)
+        public async Task<ActionResult> CreateOrder([FromBody] CreateOrderDto dto)
         {
             var username = User.Identity?.Name ?? "Anonymous";
-            
-            // 保存图片(如果上传了)
-            string? imageUrl = null;
-            if (image != null)
-            {
-                var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
-                if (!Directory.Exists(uploadsDir)) Directory.CreateDirectory(uploadsDir);
-                
-                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
-                var filePath = Path.Combine(uploadsDir, fileName);
-                
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await image.CopyToAsync(stream);
-                }
-                
-                imageUrl = $"/uploads/{fileName}";
-            }
 
             var order = new Order
             {
@@ -150,7 +132,7 @@ namespace SmartDormitoryRepair.Api.Controllers
                 Location = dto.Location,
                 Creator = username,
                 Status = "Pending",
-                ImageUrl = imageUrl
+                ImageUrl = dto.ImageUrl  // 使用前端上传后返回的URL
             };
 
             _context.Orders.Add(order);
@@ -167,7 +149,7 @@ namespace SmartDormitoryRepair.Api.Controllers
                     .SendAsync("ReceiveNotification", $"有新工单提交：{order.Title}", new { orderId = order.Id, title = order.Title });
             }
 
-            return Ok(new { orderId = order.Id, message = "工单创建成功", imageUrl });
+            return Ok(new { orderId = order.Id, message = "工单创建成功", imageUrl = order.ImageUrl });
         }
 
         [HttpPatch("{id}/status")]
