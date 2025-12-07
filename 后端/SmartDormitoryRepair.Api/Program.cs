@@ -1,10 +1,11 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SmartDormitoryRepair.Api.Data;
 using SmartDormitoryRepair.Api;
 using SmartDormitoryRepair.Api.Hubs;
 using SmartDormitoryRepair.Api.Services;
+using SmartDormitoryRepair.Api.Filters; // 🔥 AOP操作日志
 using System.Text;
 using Hangfire;
 using Hangfire.MySql;
@@ -37,6 +38,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // 🚀 添加内存缓存服务
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<CacheService>();
+
+// 🔥 注册AOP日志过滤器
+builder.Services.AddScoped<OperationLogFilter>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -91,7 +95,11 @@ builder.Services.AddHangfire(config =>
     )));
 builder.Services.AddHangfireServer();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    // 🔥 全局添加AOP日志过滤器
+    options.Filters.Add<OperationLogFilter>();
+});
 
 var app = builder.Build();
 
