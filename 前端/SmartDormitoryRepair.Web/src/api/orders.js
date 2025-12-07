@@ -27,6 +27,13 @@ export const createOrder = (data) => {
   return api.post('/orders', data)
 }
 
+// 📷 上传文件
+export const uploadFile = (formData) => {
+  return api.post('/file/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
+}
+
 // 更新状态
 export const updateOrderStatus = (id, status) => {
   return api.patch(`/orders/${id}/status`, { status })

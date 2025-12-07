@@ -27,16 +27,31 @@
         <el-form-item label="上传图片">
           <el-upload
             action="#"
-            list-type="picture-card"
             :auto-upload="false"
             :on-change="handleFileChange"
-            :limit="3"
+            :show-file-list="false"
+            accept="image/*"
           >
-            <el-icon><Plus /></el-icon>
-            <template #tip>
-              <div class="upload-tip">最多上传3张图片，支持jpg/png格式</div>
-            </template>
+            <el-button type="primary" :disabled="uploading">
+              <el-icon v-if="uploading"><Loading /></el-icon>
+              {{ uploading ? '压缩上传中...' : '选择图片' }}
+            </el-button>
           </el-upload>
+          
+          <!-- 图片预览 -->
+          <div v-if="imagePreview" class="image-preview-container">
+            <img :src="imagePreview" class="image-preview" />
+            <el-button type="danger" size="small" @click="removeImage" class="remove-btn">
+              ×
+            </el-button>
+            <div class="image-info">
+              <span>💾 {{ imageSizeInfo }}</span>
+            </div>
+          </div>
+          
+          <div class="upload-tip">
+            支持jpg/png/gif格式，图片将自动压缩至200KB以内
+          </div>
         </el-form-item>
 
         <el-form-item>
@@ -53,13 +68,17 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Plus } from '@element-plus/icons-vue'
-import { createOrder } from '../api/orders'
+import { Plus, Loading } from '@element-plus/icons-vue'
+import { createOrder, uploadFile } from '../api/orders'
+import { compressImage } from '../utils/compressImage'
 import router from '../router'
 
 const formRef = ref()
 const loading = ref(false)
-const imageFile = ref(null)
+const uploading = ref(false)
+const imagePreview = ref('')
+const imageUrl = ref('')
+const imageSizeInfo = ref('')
 
 const form = reactive({
   title: '',
@@ -73,8 +92,43 @@ const rules = reactive({
   description: [{ required: true, message: '请输入详细描述', trigger: 'blur' }]
 })
 
-const handleFileChange = (file) => {
-  imageFile.value = file.raw
+// 处理文件选择：压缩并上传
+const handleFileChange = async (file) => {
+  try {
+    uploading.value = true
+    
+    // 记录原始大小
+    const originalSize = file.raw.size
+    
+    // 使用Canvas压缩图片
+    const compressedBlob = await compressImage(file.raw, 0.2) // 200KB限制
+    
+    // 创建FormData上传
+    const formData = new FormData()
+    formData.append('file', compressedBlob, 'image.jpg')
+    
+    // 上传到服务器
+    const res = await uploadFile(formData)
+    imageUrl.value = res.data.url
+    imagePreview.value = URL.createObjectURL(compressedBlob)
+    
+    // 显示压缩信息
+    imageSizeInfo.value = `${(originalSize / 1024).toFixed(2)}KB → ${(compressedBlob.size / 1024).toFixed(2)}KB`
+    
+    ElMessage.success('图片上传成功！')
+  } catch (error) {
+    ElMessage.error('图片处理失败：' + error.message)
+  } finally {
+    uploading.value = false
+  }
+}
+
+// 移除图片
+const removeImage = () => {
+  imagePreview.value = ''
+  imageUrl.value = ''
+  imageSizeInfo.value = ''
+  ElMessage.info('已移除图片')
 }
 
 const handleSubmit = async () => {
@@ -82,16 +136,16 @@ const handleSubmit = async () => {
     if (!valid) return
 
     loading.value = true
-    const formData = new FormData()
-    formData.append('Title', form.title)
-    formData.append('Location', form.location)
-    formData.append('Description', form.description)
-    if (imageFile.value) {
-      formData.append('image', imageFile.value)
-    }
 
     try {
-      const res = await createOrder(formData)
+      const orderData = {
+        title: form.title,
+        location: form.location,
+        description: form.description,
+        imageUrl: imageUrl.value || null
+      }
+      
+      const res = await createOrder(orderData)
       ElMessage.success('工单创建成功！')
       router.push('/orders')
     } catch (error) {
@@ -124,6 +178,40 @@ const handleSubmit = async () => {
   font-size: 12px;
   color: #909399;
   margin-top: 5px;
+}
+
+/* 📷 图片预览样式 */
+.image-preview-container {
+  position: relative;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.image-preview {
+  max-width: 300px;
+  max-height: 200px;
+  border-radius: 8px;
+  border: 2px solid #dcdfe6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.remove-btn {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.image-info {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #67c23a;
+  text-align: center;
 }
 
 /* 📱 移动端深度优化 */
