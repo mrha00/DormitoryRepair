@@ -32,5 +32,11 @@ namespace SmartDormitoryRepair.Api.Hubs
         {
             await Clients.Group($"user_{username}").SendAsync("ReceiveNotification", message, data);
         }
+
+        // 心跳检测
+        public async Task Ping()
+        {
+            await Clients.Caller.SendAsync("Pong", DateTime.Now);
+        }
     }
 }

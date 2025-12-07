@@ -1,10 +1,14 @@
-﻿﻿﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SmartDormitoryRepair.Api.Data;
 using SmartDormitoryRepair.Api;
 using SmartDormitoryRepair.Api.Hubs;
+using SmartDormitoryRepair.Api.Services;
 using System.Text;
+using Hangfire;
+using Hangfire.MySql;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +66,27 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 builder.Services.AddSignalR(); // 添加 SignalR 服务
+
+// 注册定时任务服务
+builder.Services.AddScoped<TimeoutOrderChecker>();
+
+// 添加 Hangfire 服务
+builder.Services.AddHangfire(config => 
+    config.UseStorage(new MySqlStorage(
+        builder.Configuration.GetConnectionString("Default"),
+        new MySqlStorageOptions
+        {
+            QueuePollInterval = TimeSpan.FromSeconds(15),
+            JobExpirationCheckInterval = TimeSpan.FromHours(1),
+            CountersAggregateInterval = TimeSpan.FromMinutes(5),
+            PrepareSchemaIfNecessary = true,
+            DashboardJobListLimit = 50000,
+            TransactionTimeout = TimeSpan.FromMinutes(1),
+            TablesPrefix = "Hangfire"
+        }
+    )));
+builder.Services.AddHangfireServer();
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -81,6 +106,21 @@ using (var scope = app.Services.CreateScope())
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Hangfire Dashboard （需要 Admin 角色）
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new HangfireAuthorizationFilter() }
+});
+
 app.MapHub<NotificationHub>("/notificationHub"); // 映射 SignalR Hub
 app.MapControllers();
+
+// 创建定时任务：每小时检查超时24小时未处理的工单
+RecurringJob.AddOrUpdate<TimeoutOrderChecker>(
+    "CheckTimeoutOrders",
+    checker => checker.CheckTimeoutOrders(),
+    Cron.Hourly()
+);
+
 app.Run("http://0.0.0.0:5002");
