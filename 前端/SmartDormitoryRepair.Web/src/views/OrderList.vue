@@ -3,7 +3,15 @@
     <el-card class="order-card" shadow="hover">
       <template #header>
         <div class="card-header">
-          <h2>🛠️ 工单管理</h2>
+          <h2 class="header-title">
+            🛠️ 工单管理
+            <!-- 🔌 连接状态指示器 -->
+            <span v-if="shouldShowStatus" class="connection-status" :class="{ connected: isConnected }">
+              <el-tooltip :content="connectionText">
+                <span class="status-dot"></span>
+              </el-tooltip>
+            </span>
+          </h2>
           <div class="header-actions">
             <!-- 📬 消息中心按钮 -->
             <el-badge :value="unreadCount" :hidden="unreadCount === 0" class="message-badge">
@@ -267,6 +275,7 @@ import { logout } from '../api/auth'
 import { getUnreadCount } from '../api/notifications'
 import { useRouter } from 'vue-router'
 import notificationService from '../services/signalr'
+import * as signalR from '@microsoft/signalr'
 
 const router = useRouter()
 
@@ -276,6 +285,11 @@ const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const unreadCount = ref(0)
+
+// 🔌 连接状态显示
+const shouldShowStatus = ref(true)
+const isConnected = ref(false)
+const connectionText = ref('连接中...')
 
 const searchForm = ref({
   status: '',
@@ -361,6 +375,11 @@ const loadOrders = async () => {
     
     // 👥 如果是维修工且选择了“我的工单”，只显示分配给自己的
 if (currentUserRole === 'Maintainer' && searchForm.value.scope === 'my') {
+      params.assignedToMe = true
+    }
+    
+    // 🎓 如果是学生，只显示自己创建的工单
+    if (currentUserRole === 'Student') {
       params.assignedToMe = true
     }
     
@@ -613,6 +632,18 @@ onMounted(() => {
   loadOrders()
   loadUnreadCount() // 🔔 加载未读消息数
   
+  // 🔌 设置连接状态回调
+  notificationService.onConnectionStateChanged = (connected, text) => {
+    isConnected.value = connected
+    connectionText.value = text
+  }
+  
+  // 🔌 检查当前连接状态
+  if (notificationService.connection?.state === signalR.HubConnectionState.Connected) {
+    isConnected.value = true
+    connectionText.value = '已连接'
+  }
+  
   // 🔔 监听 SignalR 通知，当收到新工单时自动刷新列表
   if (notificationService.connection) {
     // 使用 addEventListener 样的方式，不会覆盖 signalr.js 中的监听器
@@ -729,6 +760,64 @@ onBeforeUnmount(() => {
   margin: 0;
   color: #303133;
   font-size: 24px;
+}
+
+/* 🔌 标题相对定位 */
+.header-title {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  color: #303133;
+  font-size: 24px;
+}
+
+/* 🔌 连接状态指示器（相对于标题定位） */
+.connection-status {
+  position: absolute;
+  top: -8px;
+  right: -20px;
+  z-index: 10;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #f56c6c;
+  display: inline-block;
+  animation: pulse-red 2s infinite;
+}
+
+.connection-status.connected .status-dot {
+  background: #67c23a;
+  animation: pulse-green 2s infinite;
+}
+
+/* 红色点的扩散动画 */
+@keyframes pulse-red {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 108, 108, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(245, 108, 108, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 108, 108, 0);
+  }
+}
+
+/* 绿色点的扩散动画 */
+@keyframes pulse-green {
+  0% {
+    box-shadow: 0 0 0 0 rgba(103, 194, 58, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(103, 194, 58, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(103, 194, 58, 0);
+  }
 }
 
 .search-bar {

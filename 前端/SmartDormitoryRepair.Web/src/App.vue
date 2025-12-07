@@ -1,11 +1,11 @@
 <template>
   <div id="app">
-    <!-- 右上角连接状态 - 只在登录后且连接完成后显示 -->
-    <div v-if="shouldShowStatus && !isConnecting" class="connection-status" :class="{ connected: isConnected }">
+    <!-- 右上角连接状态 - 已移动到OrderList组件中 -->
+    <!-- <div v-if="shouldShowStatus && !isConnecting" class="connection-status" :class="{ connected: isConnected }">
       <el-tooltip :content="connectionText">
         <span class="status-dot"></span>
       </el-tooltip>
-    </div>
+    </div> -->
     <router-view />
   </div>
 </template>

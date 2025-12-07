@@ -65,9 +65,21 @@
             size="large"
             @click="updateStatus('Completed')"
             :loading="statusLoading"
+            :disabled="!isMyOrder"
           >
             ✅ 标记完成
           </el-button>
+          
+          <!-- 🚫 提示：不能完成他人工单 -->
+          <el-tooltip 
+            v-if="hasPermission('CompleteOrder') && order.status === 'Processing' && !isMyOrder"
+            content="该工单由其他维修工负责，您无权标记完成"
+            placement="top"
+          >
+            <span style="margin-left: 10px; color: #909399; font-size: 14px;">
+              📌 非本人工单
+            </span>
+          </el-tooltip>
 
           <!-- Admin：指派按钮 -->
           <el-button 
@@ -105,6 +117,24 @@ const statusLoading = ref(false)
 const assignDialogRef = ref(null)
 
 const orderId = computed(() => parseInt(route.params.id))
+
+// 👥 判断当前用户是否是该工单的负责维修工
+const isMyOrder = computed(() => {
+  if (!order.value) return false
+  
+  const currentUser = JSON.parse(sessionStorage.getItem('user') || '{}')
+  const currentUsername = currentUser.username
+  
+  // 👑 管理员可以操作任何工单
+  if (currentUser.role === 'Admin') return true
+  
+  // 🔧 维修工只能操作自己的工单
+  if (currentUser.role === 'Maintainer') {
+    return order.value.assignedToName === currentUsername
+  }
+  
+  return false
+})
 
 const hasPermission = (permission) => {
   const permissions = JSON.parse(sessionStorage.getItem('permissions') || '[]')
