@@ -231,7 +231,8 @@ namespace SmartDormitoryRepair.Api.Controllers
             if (maintainer == null) return NotFound("维修人员不存在");
             
             order.AssignedTo = dto.MaintainerId;
-            order.Status = "Processing";
+            // ✅ 修复：指派时不修改状态，由维修工手动点击“开始处理”
+            // order.Status = "Processing";  // 删除此行
             
             // 💾 保存消息到数据库
             var notification = new Notification
