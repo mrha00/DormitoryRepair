@@ -91,7 +91,7 @@ namespace SmartDormitoryRepair.Api.Controllers
             // 权限检查：学生只能看自己的工单
             if (User.IsInRole("Student") && order.Creator != User.Identity?.Name)
             {
-                return Forbid("无权查看他人工单");
+                return StatusCode(403, new { message = "无权查看他人工单" });
             }
             
             // 🔍 查询维修工姓名
@@ -176,10 +176,32 @@ namespace SmartDormitoryRepair.Api.Controllers
             var order = await _context.Orders.FindAsync(id);
             if (order == null) return NotFound("工单不存在");
             
+            var currentUsername = User.Identity?.Name ?? "";
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == currentUsername);
+            
             // 👑 管理员可以任意修改状态，普通用户需要遵循状态转换规则
             var isAdmin = User.IsInRole("Admin");
             if (!isAdmin && !IsValidStatusTransition(order.Status, dto.Status))
                 return BadRequest("非法的状态转换");
+            
+            // 🔧 特殊逻辑：维修工点击“开始处理”时，自动分配给当前维修工
+            if (User.IsInRole("Maintainer") && order.Status == "Pending" && dto.Status == "Processing")
+            {
+                if (currentUser != null)
+                {
+                    order.AssignedTo = currentUser.Id;
+                    Console.WriteLine($"✅ 工单 #{order.Id} 自动分配给维修工: {currentUser.Username}");
+                }
+            }
+            
+            // 🚫 维修工只能标记完成自己负责的工单
+            if (User.IsInRole("Maintainer") && dto.Status == "Completed")
+            {
+                if (order.AssignedTo != currentUser?.Id)
+                {
+                    return StatusCode(403, new { message = "您只能标记完成自己负责的工单" });
+                }
+            }
             
             order.Status = dto.Status;
             await _context.SaveChangesAsync();
