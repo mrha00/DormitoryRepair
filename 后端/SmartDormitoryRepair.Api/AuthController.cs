@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿using Microsoft.AspNetCore.Mvc;
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -25,13 +25,14 @@ namespace SmartDormitoryRepair.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
+            // 📱 支持用户名或手机号登录
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Username == dto.Username);
+                .FirstOrDefaultAsync(u => u.Username == dto.Username || u.PhoneNumber == dto.Username);
             
             if (user == null)
             {
                 Console.WriteLine($"❌ 用户不存在: {dto.Username}");
-                return Unauthorized(new { message = "用户名或密码错误" });
+                return Unauthorized(new { message = "用户名/手机号或密码错误" });
             }
             
             Console.WriteLine($"✅ 找到用户: {user.Username}");

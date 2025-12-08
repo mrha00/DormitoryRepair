@@ -4,6 +4,7 @@ import OrderList from '../views/OrderList.vue'
 import OrderCreate from '../views/OrderCreate.vue'
 import OrderDetail from '../views/OrderDetail.vue'
 import NotificationCenter from '../views/NotificationCenter.vue'
+import Settings from '../views/Settings.vue'  // ⚙️ 设置页面
 import notificationService from '../services/signalr' // ✅ 导入SignalR服务
 
 const routes = [
@@ -11,6 +12,10 @@ const routes = [
     path: '/',
     name: 'Login',
     component: Login
+  },
+  {
+    path: '/login',
+    redirect: '/' // 🔄 重定向到根路径
   },
   {
     path: '/orders',
@@ -34,6 +39,12 @@ const routes = [
     path: '/notifications',
     name: 'NotificationCenter',
     component: NotificationCenter,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    component: Settings,
     meta: { requiresAuth: true }
   }
 ]

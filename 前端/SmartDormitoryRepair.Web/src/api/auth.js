@@ -18,6 +18,25 @@ api.interceptors.request.use(config => {
   return config
 })
 
+// 🚨 添加响应拦截器，处理 401 错误
+api.interceptors.response.use(
+  response => response,
+  error => {
+    // 处理 401 未授权错误（除了登录接口）
+    if (error.response?.status === 401 && !error.config.url.includes('/auth/login')) {
+      console.warn('🔐 Token 已失效，清除登录信息')
+      // 清除失效的认证信息
+      sessionStorage.removeItem('token')
+      sessionStorage.removeItem('user')
+      // 提示用户
+      ElMessage.warning('🔒 登录已过期，请重新登录')
+      // 跳转到登录页
+      router.push('/login')
+    }
+    return Promise.reject(error)
+  }
+)
+
 export const login = async (username, password) => {
   const res = await api.post('/auth/login', { username, password })
   
@@ -25,6 +44,10 @@ export const login = async (username, password) => {
   sessionStorage.setItem('token', res.data.token)
   sessionStorage.setItem('user', JSON.stringify(res.data.user))
   sessionStorage.setItem('permissions', JSON.stringify(res.data.permissions))
+  
+  // 🗑️ 清除之前保存的筛选条件（登录时重置）
+  sessionStorage.removeItem('orderFilters')
+  console.log('💾 登录成功，已清除筛选条件')
   
   // ✅ 启动 SignalR 连接
   try {

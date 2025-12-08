@@ -267,7 +267,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, h, reactive } from 'vue'
+import { ref, onMounted, onBeforeUnmount, h, reactive, watch } from 'vue'  // 👁️ 添加 watch
 import { ElMessage, ElMessageBox, ElSelect, ElOption, ElRadio, ElRadioGroup } from 'element-plus'
 import { Plus, Search, Refresh, View, User, SwitchButton, ArrowDown, Setting } from '@element-plus/icons-vue'
 import { getOrders, getMaintainers, assignOrder, deleteOrder, reassignOrder, updateOrderStatus } from '../api/orders'
@@ -291,9 +291,11 @@ const shouldShowStatus = ref(true)
 const isConnected = ref(false)
 const connectionText = ref('连接中...')
 
-const searchForm = ref({
+// 💾 从 sessionStorage 恢复筛选条件（如果存在）
+const savedFilters = sessionStorage.getItem('orderFilters')
+const searchForm = ref(savedFilters ? JSON.parse(savedFilters) : {
   status: '',
-  scope: 'my' // 👥 默认显示“我的工单”
+  scope: 'my' // 👥 默认显示"我的工单"
 })
 
 // 👤 获取当前用户信息
@@ -320,9 +322,8 @@ const handleCommand = (command) => {
   if (command === 'logout') {
     handleLogout()
   } else if (command === 'settings') {
-    ElMessage.info('🛠️ 设置功能开发中...')
-    // 后续可以跳转到设置页面
-    // router.push('/settings')
+    // ⚙️ 跳转到设置页面
+    router.push('/settings')
   }
 }
 
@@ -380,7 +381,7 @@ const loadOrders = async () => {
       status: searchForm.value.status
     }
     
-    // 👥 如果是维修工且选择了“我的工单”，只显示分配给自己的
+    // 👥 如果是维修工且选择了"我的工单"，只显示分配给自己的
 if (currentUserRole === 'Maintainer' && searchForm.value.scope === 'my') {
       params.assignedToMe = true
     }
@@ -394,7 +395,18 @@ if (currentUserRole === 'Maintainer' && searchForm.value.scope === 'my') {
     orders.value = res.data.items
     total.value = res.data.total
   } catch (error) {
-    ElMessage.error('加载工单失败：' + (error.response?.data?.message || error.message))
+    // 🚨 处理认证失败
+    if (error.response?.status === 401) {
+      console.warn('Token 已失效，请重新登录')
+      // 清除失效的 token
+      sessionStorage.removeItem('token')
+      sessionStorage.removeItem('user')
+      // 跳转到登录页
+      ElMessage.warning('登录已过期，请重新登录')
+      router.push('/login')
+    } else {
+      ElMessage.error('加载工单失败：' + (error.response?.data?.message || error.message))
+    }
   } finally {
     loading.value = false
   }
@@ -413,7 +425,18 @@ const loadUnreadCount = async () => {
     const res = await getUnreadCount()
     unreadCount.value = res.data.count
   } catch (error) {
-    console.error('加载未读消息数失败', error)
+    // 🚨 处理认证失败
+    if (error.response?.status === 401) {
+      console.warn('Token 已失效，请重新登录')
+      // 清除失效的 token
+      sessionStorage.removeItem('token')
+      sessionStorage.removeItem('user')
+      // 跳转到登录页
+      ElMessage.warning('登录已过期，请重新登录')
+      router.push('/login')
+    } else {
+      console.error('加载未读消息数失败', error)
+    }
   }
 }
 
@@ -641,8 +664,27 @@ const handleAdminAction = async (command, row) => {
   }
 }
 
+// 💾 监听筛选条件变化，自动保存到 sessionStorage
+watch(
+  searchForm,
+  (newFilters) => {
+    sessionStorage.setItem('orderFilters', JSON.stringify(newFilters))
+    console.log('💾 已保存筛选条件：', newFilters)
+  },
+  { deep: true }  // 深度监听对象属性
+)
+
 // 初始化加载
-onMounted(() => {
+onMounted(async () => {
+  // 🔐 检查用户登录状态
+  const token = sessionStorage.getItem('token')
+  if (!token) {
+    ElMessage.error('请先登录')
+    router.push('/login')
+    return
+  }
+  
+  // 加载数据
   loadOrders()
   loadUnreadCount() // 🔔 加载未读消息数
   
