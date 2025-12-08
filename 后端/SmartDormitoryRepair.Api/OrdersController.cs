@@ -161,20 +161,35 @@ namespace SmartDormitoryRepair.Api.Controllers
             var currentUsername = User.Identity?.Name ?? "";
             var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == currentUsername);
             
-            // 👑 管理员可以任意修改状态，普通用户需要遵循状态转换规则
             var isAdmin = User.IsInRole("Admin");
-            if (!isAdmin && !IsValidStatusTransition(order.Status, dto.Status))
-                return BadRequest("非法的状态转换");
             
-            // 🔧 特殊逻辑：维修工点击“开始处理”时，自动分配给当前维修工
-            if (User.IsInRole("Maintainer") && order.Status == "Pending" && dto.Status == "Processing")
+            // ⚠️ 业务规则（对所有人有效，包括管理员）：
+            // 如果要改为“处理中”或“已完成”，必须先分配维修工
+            if ((dto.Status == "Processing" || dto.Status == "Completed") && !order.AssignedTo.HasValue)
             {
-                if (currentUser != null)
+                // 特殊情况：维修工点击“开始处理”时，自动分配给自己
+                if (User.IsInRole("Maintainer") && dto.Status == "Processing")
                 {
-                    order.AssignedTo = currentUser.Id;
-                    Console.WriteLine($"✅ 工单 #{order.Id} 自动分配给维修工: {currentUser.Username}");
+                    if (currentUser != null)
+                    {
+                        order.AssignedTo = currentUser.Id;
+                        Console.WriteLine($"✅ 工单 #{order.Id} 自动分配给维修工: {currentUser.Username}");
+                    }
+                    else
+                    {
+                        return BadRequest(new { message = "系统错误：无法获取当前用户信息" });
+                    }
+                }
+                else
+                {
+                    // 🚫 管理员也不能直接修改为“处理中”或“已完成”，必须先分配维修工
+                    return BadRequest(new { message = "请先分配维修工再修改状态！\n\n原因：工单必须有明确的责任人，否则无法追责。" });
                 }
             }
+            
+            // 👑 管理员可以任意修改状态（但已经通过上面的检查），普通用户需要遵循状态转换规则
+            if (!isAdmin && !IsValidStatusTransition(order.Status, dto.Status))
+                return BadRequest("非法的状态转换");
             
             // 🚫 维修工只能标记完成自己负责的工单
             if (User.IsInRole("Maintainer") && dto.Status == "Completed")

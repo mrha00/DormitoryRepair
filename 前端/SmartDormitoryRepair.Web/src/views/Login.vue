@@ -11,7 +11,7 @@
         <el-form-item prop="username">
           <el-input 
             v-model="form.username" 
-            placeholder="请输入用户名"
+            placeholder="请输入用户名/手机号"
             :prefix-icon="User"
             size="large"
           />
@@ -20,12 +20,23 @@
         <el-form-item prop="password">
           <el-input 
             v-model="form.password" 
-            type="password" 
+            :type="showPassword ? 'text' : 'password'"
             placeholder="请输入密码"
             :prefix-icon="Lock"
             size="large"
             @keyup.enter="handleLogin"
-          />
+          >
+            <template #suffix>
+              <el-icon 
+                class="password-toggle" 
+                @click="showPassword = !showPassword"
+                :style="{ cursor: 'pointer', fontSize: '18px' }"
+              >
+                <View v-if="!showPassword" />
+                <Hide v-else />
+              </el-icon>
+            </template>
+          </el-input>
         </el-form-item>
         
         <el-form-item>
@@ -55,19 +66,20 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
-import { User, Lock, Tools } from '@element-plus/icons-vue'
+import { User, Lock, Tools, View, Hide } from '@element-plus/icons-vue'  // 👁️ 添加眼睛图标
 import { login } from '../api/auth'
 
 const formRef = ref()
 const loading = ref(false)
+const showPassword = ref(false)  // 👁️ 密码显示状态
 
 const form = reactive({
-  username: 'admin',
-  password: '123456'
+  username: '',
+  password: ''
 })
 
 const rules = reactive({
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+  username: [{ required: true, message: '请输入用户名或手机号', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
 })
 
@@ -146,6 +158,16 @@ const handleLogin = async () => {
 
 .login-form :deep(.el-input__wrapper:hover) {
   box-shadow: 0 0 0 1px #409eff;
+}
+
+/* 👁️ 密码显示/隐藏图标样式 */
+.password-toggle {
+  color: #909399;
+  transition: color 0.3s;
+}
+
+.password-toggle:hover {
+  color: #409eff;
 }
 
 .login-btn {

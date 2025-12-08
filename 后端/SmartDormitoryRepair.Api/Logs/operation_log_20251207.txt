@@ -1,0 +1,168 @@
+{
+  "Timestamp": "2025-12-07 18:06:46",
+  "User": "Anonymous",
+  "IP": "127.0.0.1",
+  "Method": "AuthController.Login",
+  "HttpMethod": "POST",
+  "Path": "/api/auth/login",
+  "QueryString": "",
+  "Parameters": "[{\u0022ParamName\u0022:\u0022dto\u0022,\u0022ParamType\u0022:\u0022LoginDto\u0022}]",
+  "StatusCode": 200,
+  "ExecutionTime": "256ms",
+  "Status": "Success"
+}
+----------------------------------------------------------------------------------------------------
+{
+  "Timestamp": "2025-12-07 18:06:53",
+  "User": "Anonymous",
+  "IP": "127.0.0.1",
+  "Method": "AuthController.Login",
+  "HttpMethod": "POST",
+  "Path": "/api/auth/login",
+  "QueryString": "",
+  "Parameters": "[{\u0022ParamName\u0022:\u0022dto\u0022,\u0022ParamType\u0022:\u0022LoginDto\u0022}]",
+  "StatusCode": 200,
+  "ExecutionTime": "409ms",
+  "Status": "Success"
+}
+----------------------------------------------------------------------------------------------------
+{
+  "Timestamp": "2025-12-07 18:06:53",
+  "User": "admin",
+  "IP": "127.0.0.1",
+  "Method": "NotificationsController.GetUnreadCount",
+  "HttpMethod": "GET",
+  "Path": "/api/notifications/unread-count",
+  "QueryString": "",
+  "Parameters": "No Parameters",
+  "StatusCode": 200,
+  "ExecutionTime": "115ms",
+  "Status": "Success"
+}
+----------------------------------------------------------------------------------------------------
+{
+  "Timestamp": "2025-12-07 18:06:54",
+  "User": "admin",
+  "IP": "127.0.0.1",
+  "Method": "OrdersController.GetOrders",
+  "HttpMethod": "GET",
+  "Path": "/api/orders",
+  "QueryString": "?page=1\u0026pageSize=10\u0026status=",
+  "Parameters": "[{\u0022ParamName\u0022:\u0022page\u0022,\u0022ParamType\u0022:\u0022Int32\u0022},{\u0022ParamName\u0022:\u0022pageSize\u0022,\u0022ParamType\u0022:\u0022Int32\u0022},{\u0022ParamName\u0022:\u0022status\u0022,\u0022ParamType\u0022:\u0022String\u0022},{\u0022ParamName\u0022:\u0022assignedToMe\u0022,\u0022ParamType\u0022:\u0022Boolean\u0022}]",
+  "StatusCode": 200,
+  "ExecutionTime": "275ms",
+  "Status": "Success"
+}
+----------------------------------------------------------------------------------------------------
+{
+  "Timestamp": "2025-12-07 18:07:05",
+  "User": "admin",
+  "IP": "127.0.0.1",
+  "Method": "NotificationsController.GetUnreadCount",
+  "HttpMethod": "GET",
+  "Path": "/api/notifications/unread-count",
+  "QueryString": "",
+  "Parameters": "No Parameters",
+  "StatusCode": 200,
+  "ExecutionTime": "109ms",
+  "Status": "Success"
+}
+----------------------------------------------------------------------------------------------------
+{
+  "Timestamp": "2025-12-07 18:07:05",
+  "User": "admin",
+  "IP": "127.0.0.1",
+  "Method": "OrdersController.GetOrders",
+  "HttpMethod": "GET",
+  "Path": "/api/orders",
+  "QueryString": "?page=1\u0026pageSize=10\u0026status=",
+  "Parameters": "[{\u0022ParamName\u0022:\u0022page\u0022,\u0022ParamType\u0022:\u0022Int32\u0022},{\u0022ParamName\u0022:\u0022pageSize\u0022,\u0022ParamType\u0022:\u0022Int32\u0022},{\u0022ParamName\u0022:\u0022status\u0022,\u0022ParamType\u0022:\u0022String\u0022},{\u0022ParamName\u0022:\u0022assignedToMe\u0022,\u0022ParamType\u0022:\u0022Boolean\u0022}]",
+  "StatusCode": 200,
+  "ExecutionTime": "259ms",
+  "Status": "Success"
+}
+----------------------------------------------------------------------------------------------------
+{
+  "Timestamp": "2025-12-07 18:07:06",
+  "User": "admin",
+  "IP": "127.0.0.1",
+  "Method": "OrdersController.GetOrders",
+  "HttpMethod": "GET",
+  "Path": "/api/orders",
+  "QueryString": "?page=1\u0026pageSize=10\u0026status=",
+  "Parameters": "[{\u0022ParamName\u0022:\u0022page\u0022,\u0022ParamType\u0022:\u0022Int32\u0022},{\u0022ParamName\u0022:\u0022pageSize\u0022,\u0022ParamType\u0022:\u0022Int32\u0022},{\u0022ParamName\u0022:\u0022status\u0022,\u0022ParamType\u0022:\u0022String\u0022},{\u0022ParamName\u0022:\u0022assignedToMe\u0022,\u0022ParamType\u0022:\u0022Boolean\u0022}]",
+  "StatusCode": 200,
+  "ExecutionTime": "0ms",
+  "Status": "Success"
+}
+----------------------------------------------------------------------------------------------------
+{
+  "Timestamp": "2025-12-07 18:07:06",
+  "User": "admin",
+  "IP": "127.0.0.1",
+  "Method": "NotificationsController.GetUnreadCount",
+  "HttpMethod": "GET",
+  "Path": "/api/notifications/unread-count",
+  "QueryString": "",
+  "Parameters": "No Parameters",
+  "StatusCode": 200,
+  "ExecutionTime": "130ms",
+  "Status": "Success"
+}
+----------------------------------------------------------------------------------------------------
+{
+  "Timestamp": "2025-12-07 18:07:06",
+  "User": "admin",
+  "IP": "127.0.0.1",
+  "Method": "OrdersController.GetOrders",
+  "HttpMethod": "GET",
+  "Path": "/api/orders",
+  "QueryString": "?page=1\u0026pageSize=10\u0026status=",
+  "Parameters": "[{\u0022ParamName\u0022:\u0022page\u0022,\u0022ParamType\u0022:\u0022Int32\u0022},{\u0022ParamName\u0022:\u0022pageSize\u0022,\u0022ParamType\u0022:\u0022Int32\u0022},{\u0022ParamName\u0022:\u0022status\u0022,\u0022ParamType\u0022:\u0022String\u0022},{\u0022ParamName\u0022:\u0022assignedToMe\u0022,\u0022ParamType\u0022:\u0022Boolean\u0022}]",
+  "StatusCode": 200,
+  "ExecutionTime": "0ms",
+  "Status": "Success"
+}
+----------------------------------------------------------------------------------------------------
+{
+  "Timestamp": "2025-12-07 18:07:06",
+  "User": "admin",
+  "IP": "127.0.0.1",
+  "Method": "NotificationsController.GetUnreadCount",
+  "HttpMethod": "GET",
+  "Path": "/api/notifications/unread-count",
+  "QueryString": "",
+  "Parameters": "No Parameters",
+  "StatusCode": 200,
+  "ExecutionTime": "133ms",
+  "Status": "Success"
+}
+----------------------------------------------------------------------------------------------------
+{
+  "Timestamp": "2025-12-07 18:07:07",
+  "User": "admin",
+  "IP": "127.0.0.1",
+  "Method": "OrdersController.GetOrders",
+  "HttpMethod": "GET",
+  "Path": "/api/orders",
+  "QueryString": "?page=1\u0026pageSize=10\u0026status=",
+  "Parameters": "[{\u0022ParamName\u0022:\u0022page\u0022,\u0022ParamType\u0022:\u0022Int32\u0022},{\u0022ParamName\u0022:\u0022pageSize\u0022,\u0022ParamType\u0022:\u0022Int32\u0022},{\u0022ParamName\u0022:\u0022status\u0022,\u0022ParamType\u0022:\u0022String\u0022},{\u0022ParamName\u0022:\u0022assignedToMe\u0022,\u0022ParamType\u0022:\u0022Boolean\u0022}]",
+  "StatusCode": 200,
+  "ExecutionTime": "0ms",
+  "Status": "Success"
+}
+----------------------------------------------------------------------------------------------------
+{
+  "Timestamp": "2025-12-07 18:07:07",
+  "User": "admin",
+  "IP": "127.0.0.1",
+  "Method": "NotificationsController.GetUnreadCount",
+  "HttpMethod": "GET",
+  "Path": "/api/notifications/unread-count",
+  "QueryString": "",
+  "Parameters": "No Parameters",
+  "StatusCode": 200,
+  "ExecutionTime": "127ms",
+  "Status": "Success"
+}
+----------------------------------------------------------------------------------------------------
