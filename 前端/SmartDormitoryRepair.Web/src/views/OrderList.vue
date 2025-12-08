@@ -365,6 +365,13 @@ const formatDateTime = (dateString) => {
 
 // 加载数据
 const loadOrders = async () => {
+  // ✅ 检查是否已登录
+  const token = sessionStorage.getItem('token')
+  if (!token) {
+    console.warn('未登录，跳过加载工单列表')
+    return
+  }
+  
   loading.value = true
   try {
     const params = {
@@ -395,6 +402,13 @@ if (currentUserRole === 'Maintainer' && searchForm.value.scope === 'my') {
 
 // 📬 加载未读消息数量
 const loadUnreadCount = async () => {
+  // ✅ 检查是否已登录
+  const token = sessionStorage.getItem('token')
+  if (!token) {
+    console.warn('未登录，跳过加载未读消息数')
+    return
+  }
+  
   try {
     const res = await getUnreadCount()
     unreadCount.value = res.data.count
