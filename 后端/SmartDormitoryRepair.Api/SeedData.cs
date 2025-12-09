@@ -25,7 +25,6 @@ namespace SmartDormitoryRepair.Api
                         context.Roles.Add(repairmanRole);
                         context.Roles.Add(studentRole);
                         context.SaveChanges();
-                        Console.WriteLine("Roles added successfully.");
                     }
 
                     // 添加权限（如果不存在）
@@ -43,7 +42,6 @@ namespace SmartDormitoryRepair.Api
                         };
                         context.Permissions.AddRange(permissions);
                         context.SaveChanges();
-                        Console.WriteLine("Permissions added successfully.");
                     }
 
                     // 添加角色权限关联（如果不存在）
@@ -66,7 +64,6 @@ namespace SmartDormitoryRepair.Api
                                 };
                                 context.RolePermissions.AddRange(rolePermissions);
                                 context.SaveChanges();
-                                Console.WriteLine("RolePermissions added successfully.");
                             }
                         }
                     }
@@ -89,31 +86,30 @@ namespace SmartDormitoryRepair.Api
                             new User
                             {
                                 Username = "张师傅",
-                                PasswordHash = "$2a$11$KHLIPm3f2AipGAKax9Ym6Oh3x3A23A93WGNCDO/4riexaJWo6Z.xS", // admin123
+                                PasswordHash = BCrypt.Net.BCrypt.HashPassword("a123456"), // 使用BCrypt哈希
                                 Role = "Maintainer"
                             },
                             new User
                             {
                                 Username = "李师傅",
-                                PasswordHash = "$2a$11$KHLIPm3f2AipGAKax9Ym6Oh3x3A23A93WGNCDO/4riexaJWo6Z.xS", // admin123
+                                PasswordHash = BCrypt.Net.BCrypt.HashPassword("a123456"), // 使用BCrypt哈希
                                 Role = "Maintainer"
                             },
                             new User
                             {
                                 Username = "王师傅",
-                                PasswordHash = "$2a$11$KHLIPm3f2AipGAKax9Ym6Oh3x3A23A93WGNCDO/4riexaJWo6Z.xS", // admin123
+                                PasswordHash = BCrypt.Net.BCrypt.HashPassword("a123456"), // 使用BCrypt哈希
                                 Role = "Maintainer"
                             },
                             new User
                             {
                                 Username = "刘师傅",
-                                PasswordHash = "$2a$11$KHLIPm3f2AipGAKax9Ym6Oh3x3A23A93WGNCDO/4riexaJWo6Z.xS", // admin123
+                                PasswordHash = BCrypt.Net.BCrypt.HashPassword("a123456"), // 使用BCrypt哈希
                                 Role = "Maintainer"
                             }
                         );
                         
                         context.SaveChanges();
-                        Console.WriteLine("Admin user and maintainers added successfully.");
                     }
 
                     // 给admin用户分配Admin角色（如果不存在关联）
@@ -125,7 +121,6 @@ namespace SmartDormitoryRepair.Api
                         var userRole = new UserRole { UserId = adminUserForRole.Id, RoleId = adminRoleObj.Id };
                         context.UserRoles.Add(userRole);
                         context.SaveChanges();
-                        Console.WriteLine("UserRole association added successfully.");
                     }
 
                     // 🔥 强制重置维修工账号（删除旧的，创建新的）
@@ -137,23 +132,19 @@ namespace SmartDormitoryRepair.Api
                     {
                         context.Users.RemoveRange(existingMaintainers);
                         context.SaveChanges();
-                        Console.WriteLine($"🗑️ 已删除 {existingMaintainers.Count} 个旧的维修工账号");
                     }
                     
                     // 🔑 强制重置admin用户密码（解决密码哈希过期问题）
                     var existingAdmin = context.Users.FirstOrDefault(u => u.Username == "admin");
                     if (existingAdmin != null)
                     {
-                        var newPasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123");  // 🔑 改为 admin123（8位）
+                        var newPasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123");
                         existingAdmin.PasswordHash = newPasswordHash;
                         context.SaveChanges();
-                        Console.WriteLine($"✅ 已重置admin密码：admin123");
-                        Console.WriteLine($"🔑 新密码哈希: {newPasswordHash}");
                     }
                     
                     // 重新创建维修工账号（使用新生成的密码哈希）
-                    var newPassword = BCrypt.Net.BCrypt.HashPassword("admin123");
-                    Console.WriteLine($"🔑 新密码哈希: {newPassword}");
+                    var newPassword = BCrypt.Net.BCrypt.HashPassword("a123456");
                     
                     foreach (var name in maintainerNames)
                     {
@@ -165,7 +156,6 @@ namespace SmartDormitoryRepair.Api
                         });
                     }
                     context.SaveChanges();
-                    Console.WriteLine($"✅ 已重新创建 {maintainerNames.Length} 个维修工账号");
 
                     // 🎓 新增学生测试账号（张三、李四、王五）
                     var studentNames = new[] { "张三", "李四", "王五" };
@@ -173,7 +163,7 @@ namespace SmartDormitoryRepair.Api
                     {
                         if (!context.Users.Any(u => u.Username == name))
                         {
-                            var studentPassword = BCrypt.Net.BCrypt.HashPassword("password123");
+                            var studentPassword = BCrypt.Net.BCrypt.HashPassword("a123456");
                             context.Users.Add(new User
                             {
                                 Username = name,
@@ -181,9 +171,17 @@ namespace SmartDormitoryRepair.Api
                                 Role = "Student"
                             });
                         }
+                        else
+                        {
+                            // 如果学生账户已存在，更新密码以确保使用正确的密码
+                            var existingStudent = context.Users.FirstOrDefault(u => u.Username == name);
+                            if (existingStudent != null)
+                            {
+                                existingStudent.PasswordHash = BCrypt.Net.BCrypt.HashPassword("password123");
+                            }
+                        }
                     }
                     context.SaveChanges();
-                    Console.WriteLine($"✅ 学生账号检查完成（张三、李四、王五）");
 
                     // 🎓 添加学生测试工单（如果不存在）
                     var studentOrders = context.Orders.Where(o => 
@@ -256,13 +254,11 @@ namespace SmartDormitoryRepair.Api
                         };
                         context.Orders.AddRange(orders);
                         context.SaveChanges();
-                        Console.WriteLine("✅ 测试工单添加成功（张三×2、李四×2、王五×2）");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error initializing seed data: {ex.Message}");
-                    throw;
+                    Console.WriteLine("SeedData initialization failed: " + ex.Message);
                 }
             }
         }
