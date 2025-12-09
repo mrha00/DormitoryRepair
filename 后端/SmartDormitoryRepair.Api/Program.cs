@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SmartDormitoryRepair.Api.Data;
@@ -22,10 +22,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new[] { "http://localhost:5173" };
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials(); // SignalR 需要
+              .AllowCredentials();
     });
 });
 
@@ -79,21 +80,28 @@ builder.Services.AddSignalR(); // 添加 SignalR 服务
 builder.Services.AddScoped<TimeoutOrderChecker>();
 
 // 添加 Hangfire 服务
-builder.Services.AddHangfire(config => 
-    config.UseStorage(new MySqlStorage(
-        builder.Configuration.GetConnectionString("Default"),
-        new MySqlStorageOptions
-        {
-            QueuePollInterval = TimeSpan.FromSeconds(15),
-            JobExpirationCheckInterval = TimeSpan.FromHours(1),
-            CountersAggregateInterval = TimeSpan.FromMinutes(5),
-            PrepareSchemaIfNecessary = true,
-            DashboardJobListLimit = 50000,
-            TransactionTimeout = TimeSpan.FromMinutes(1),
-            TablesPrefix = "Hangfire"
-        }
-    )));
-builder.Services.AddHangfireServer();
+try
+{
+    builder.Services.AddHangfire(config =>
+        config.UseStorage(new MySqlStorage(
+            builder.Configuration.GetConnectionString("Default"),
+            new MySqlStorageOptions
+            {
+                QueuePollInterval = TimeSpan.FromSeconds(15),
+                JobExpirationCheckInterval = TimeSpan.FromHours(1),
+                CountersAggregateInterval = TimeSpan.FromMinutes(5),
+                PrepareSchemaIfNecessary = true,
+                DashboardJobListLimit = 50000,
+                TransactionTimeout = TimeSpan.FromMinutes(1),
+                TablesPrefix = "Hangfire"
+            }
+        )));
+    builder.Services.AddHangfireServer();
+}
+catch (Exception ex)
+{
+    Console.WriteLine("Hangfire setup failed: " + ex.Message);
+}
 
 builder.Services.AddControllers(options =>
 {
@@ -107,9 +115,10 @@ var app = builder.Build();
 app.UseCors("AllowFrontend");
 
 // 配置静态文件服务
-app.UseStaticFiles(); // 允许访问wwwroot下的文件
+app.UseDefaultFiles(); // 使 / 自动返回 wwwroot 下的 index.html
+app.UseStaticFiles(); // 允许访问 wwwroot 下的静态文件
 
-// 初始化种子数据
+// 初始化种子数据（在所有环境中都运行）
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -120,19 +129,46 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Hangfire Dashboard （需要 Admin 角色）
-app.UseHangfireDashboard("/hangfire", new DashboardOptions
+try
 {
-    Authorization = new[] { new HangfireAuthorizationFilter() }
-});
+    app.UseHangfireDashboard("/hangfire", new DashboardOptions
+    {
+        Authorization = new[] { new HangfireAuthorizationFilter() }
+    });
+}
+catch (Exception ex)
+{
+    Console.WriteLine("Hangfire dashboard failed: " + ex.Message);
+}
 
 app.MapHub<NotificationHub>("/notificationHub"); // 映射 SignalR Hub
 app.MapControllers();
 
-// 创建定时任务：每小时检查超时24小时未处理的工单
-RecurringJob.AddOrUpdate<TimeoutOrderChecker>(
-    "CheckTimeoutOrders",
-    checker => checker.CheckTimeoutOrders(),
-    Cron.Hourly()
-);
+// 前端 SPA 路由回退到 index.html
+app.MapFallbackToFile("/index.html");
 
-app.Run("http://0.0.0.0:5002");
+// 创建定时任务：每天检查超时48小时未处理的工单
+try
+{
+    RecurringJob.AddOrUpdate<TimeoutOrderChecker>(
+        "CheckTimeoutOrders",
+        checker => checker.CheckTimeoutOrders(),
+        Cron.Daily()
+    );
+}
+catch (Exception ex)
+{
+    Console.WriteLine("Hangfire recurring job failed: " + ex.Message);
+}
+
+// 兼容 IIS 与自托管：若环境已提供端口，则使用默认 app.Run()
+var providedUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
+var providedPort = Environment.GetEnvironmentVariable("ASPNETCORE_PORT");
+if (!string.IsNullOrEmpty(providedUrls) || !string.IsNullOrEmpty(providedPort))
+{
+    app.Run();
+}
+else
+{
+    app.Run("http://0.0.0.0:8080");
+}

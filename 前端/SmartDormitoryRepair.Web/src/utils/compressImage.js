@@ -54,7 +54,7 @@ export function compressImage(file, maxSizeMB = 0.2) {
             if (sizeMB > maxSizeMB) {
               reject(new Error(`压缩后图片大小为${(sizeMB * 1024).toFixed(2)}KB，仍超过${maxSizeMB * 1024}KB限制`));
             } else {
-              console.log(`✅ 图片压缩成功：${(file.size / 1024).toFixed(2)}KB → ${(blob.size / 1024).toFixed(2)}KB`);
+              // 生产环境中移除详细的信息输出
               resolve(blob);
             }
           },

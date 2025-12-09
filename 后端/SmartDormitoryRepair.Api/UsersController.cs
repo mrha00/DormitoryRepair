@@ -223,12 +223,14 @@ namespace SmartDormitoryRepair.Api.Controllers
                 return BadRequest(new { message = "不能重置其他管理员的密码" });
             }
 
-            // 使用传入的密码，如果没有传入则使用默认密码 a123456
-            var newPassword = dto?.Password ?? "a123456";
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Password))
+            {
+                return BadRequest(new { message = "请提供新密码" });
+            }
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = $"密码已重置为：{newPassword}" });
+            return Ok(new { message = "密码已重置" });
         }
 
         /// <summary>

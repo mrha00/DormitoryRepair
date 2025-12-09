@@ -3,7 +3,7 @@ import { ElMessage } from 'element-plus'
 import router from '../router'
 
 const api = axios.create({
-  baseURL: 'http://localhost:5002/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 5000
 })
 
@@ -56,8 +56,13 @@ export const uploadFile = (formData) => {
 }
 
 // 更新状态
-export const updateOrderStatus = (id, status) => {
-  return api.patch(`/orders/${id}/status`, { status })
+export const updateOrderStatus = (id, data) => {
+  // 如果传入的是字符串，则保持原有行为以保证向后兼容
+  if (typeof data === 'string') {
+    return api.patch(`/orders/${id}/status`, { status: data });
+  }
+  // 如果传入的是对象，则使用新格式
+  return api.patch(`/orders/${id}/status`, data);
 }
 
 // 获取维修工列表

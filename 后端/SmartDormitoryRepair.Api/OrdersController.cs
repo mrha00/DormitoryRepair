@@ -164,10 +164,10 @@ namespace SmartDormitoryRepair.Api.Controllers
             var isAdmin = User.IsInRole("Admin");
             
             // ⚠️ 业务规则（对所有人有效，包括管理员）：
-            // 如果要改为“处理中”或“已完成”，必须先分配维修工
+            // 如果要改为"处理中"或"已完成"，必须先分配维修工
             if ((dto.Status == "Processing" || dto.Status == "Completed") && !order.AssignedTo.HasValue)
             {
-                // 特殊情况：维修工点击“开始处理”时，自动分配给自己
+                // 特殊情况：维修工点击"开始处理"时，自动分配给自己
                 if (User.IsInRole("Maintainer") && dto.Status == "Processing")
                 {
                     if (currentUser != null)
@@ -180,10 +180,23 @@ namespace SmartDormitoryRepair.Api.Controllers
                         return BadRequest(new { message = "系统错误：无法获取当前用户信息" });
                     }
                 }
+                // 👑 管理员可以直接分配维修工并修改状态
+                else if (isAdmin && dto.Status == "Processing" && dto.AssignTo.HasValue)
+                {
+                    // 检查指定的维修工是否存在
+                    var maintainer = await _context.Users.FindAsync(dto.AssignTo.Value);
+                    if (maintainer == null || maintainer.Role != "Maintainer")
+                    {
+                        return BadRequest(new { message = "指定的用户不是有效的维修工" });
+                    }
+                    
+                    order.AssignedTo = dto.AssignTo.Value;
+                    Console.WriteLine($"✅ 工单 #{order.Id} 由管理员分配给维修工: {maintainer.Username}");
+                }
                 else
                 {
-                    // 🚫 管理员也不能直接修改为“处理中”或“已完成”，必须先分配维修工
-                    return BadRequest(new { message = "请先分配维修工再修改状态！\n\n原因：工单必须有明确的责任人，否则无法追责。" });
+                    // 🚫 普通用户不能直接修改为"处理中"或"已完成"，必须先分配维修工
+                    return BadRequest(new { message = "请先分配维修工再修改状态！" });
                 }
             }
             
@@ -362,6 +375,7 @@ namespace SmartDormitoryRepair.Api.Controllers
     public class UpdateStatusDto
     {
         public string Status { get; set; } = null!;
+        public int? AssignTo { get; set; }  // 管理员在修改状态时可以同时指定维修工
     }
 
     public class AssignOrderDto

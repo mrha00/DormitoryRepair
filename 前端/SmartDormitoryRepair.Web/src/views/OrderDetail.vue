@@ -38,8 +38,8 @@
         <div v-if="order.imageUrl" class="image-section">
           <h3>📷 图片附件</h3>
           <el-image 
-            :src="`http://localhost:5002${order.imageUrl}`" 
-            :preview-src-list="[`http://localhost:5002${order.imageUrl}`]"
+            :src="`${fileBase}${order.imageUrl}`" 
+            :preview-src-list="[`${fileBase}${order.imageUrl}`]"
             fit="cover"
             class="order-image"
           />
@@ -117,6 +117,9 @@ const statusLoading = ref(false)
 const assignDialogRef = ref(null)
 
 const orderId = computed(() => parseInt(route.params.id))
+
+const apiBase = import.meta.env.VITE_API_BASE_URL || ''
+const fileBase = import.meta.env.VITE_FILE_BASE_URL || apiBase.replace(/\/api$/, '')
 
 // 👥 判断当前用户是否是该工单的负责维修工
 const isMyOrder = computed(() => {

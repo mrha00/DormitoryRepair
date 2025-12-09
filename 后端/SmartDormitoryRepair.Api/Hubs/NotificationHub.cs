@@ -11,7 +11,7 @@ namespace SmartDormitoryRepair.Api.Hubs
             if (!string.IsNullOrEmpty(username))
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, $"user_{username}");
-                Console.WriteLine($"User {username} connected to SignalR with connection ID: {Context.ConnectionId}");
+                // 生产环境中应避免记录敏感信息如连接ID
             }
             await base.OnConnectedAsync();
         }
@@ -22,7 +22,7 @@ namespace SmartDormitoryRepair.Api.Hubs
             var username = Context.User?.Identity?.Name;
             if (!string.IsNullOrEmpty(username))
             {
-                Console.WriteLine($"User {username} disconnected from SignalR");
+                // 生产环境中应避免记录敏感信息
             }
             await base.OnDisconnectedAsync(exception);
         }

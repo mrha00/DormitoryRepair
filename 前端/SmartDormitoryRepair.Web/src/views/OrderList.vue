@@ -525,9 +525,22 @@ const handleAdminAction = async (command, row) => {
   } else if (command === 'changeStatus') {
     // 🔄 修改状态 - 使用下拉列表选择
     try {
+      // 获取维修工列表（用于管理员分配）
+      let maintainers = [];
+      if (currentUserRole === 'Admin') {
+        try {
+          const res = await getMaintainers();
+          maintainers = res.data;
+        } catch (error) {
+          console.error('获取维修工列表失败:', error);
+        }
+      }
+      
       // 使用 reactive 对象实现响应式
       const state = reactive({
-        selectedStatus: row.status
+        selectedStatus: row.status,
+        selectedMaintainer: null,
+        showMaintainerSelect: currentUserRole === 'Admin' && !row.assignedTo && (row.status === 'Pending' || row.assignedTo === null)
       })
       
       // 状态选项
@@ -548,6 +561,8 @@ const handleAdminAction = async (command, row) => {
             modelValue: state.selectedStatus,
             'onUpdate:modelValue': (val) => { 
               state.selectedStatus = val
+              // 当管理员选择"处理中"且工单未分配时，显示维修工选择
+              state.showMaintainerSelect = currentUserRole === 'Admin' && !row.assignedTo && val === 'Processing'
             },
             placeholder: '请选择状态',
             style: 'width: 100%',
@@ -563,27 +578,53 @@ const handleAdminAction = async (command, row) => {
               }),
               item.label
             ])
-          ))
+          )),
+          // 管理员在将未分配的工单改为"处理中"时，可以同时选择维修工
+          state.showMaintainerSelect ? h('div', { style: 'margin-top: 20px' }, [
+            h('div', { style: 'margin-bottom: 15px; font-weight: 600; font-size: 15px; color: #303133' }, '同时分配维修工：'),
+            h(ElSelect, {
+              modelValue: state.selectedMaintainer,
+              'onUpdate:modelValue': (val) => { 
+                state.selectedMaintainer = val
+              },
+              placeholder: '请选择维修工（可选）',
+              style: 'width: 100%',
+              size: 'large',
+              clearable: true
+            }, () => maintainers.map(m => 
+              h(ElOption, {
+                key: m.id,
+                label: m.username,
+                value: m.id
+              }, () => `🔧 ${m.username}`)
+            ))
+          ]) : null
         ]),
         showCancelButton: true,
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         beforeClose: async (action, instance, done) => {
           if (action === 'confirm') {
-            if (state.selectedStatus !== row.status) {
+            if (state.selectedStatus !== row.status || state.selectedMaintainer) {
               try {
-                await updateOrderStatus(row.id, state.selectedStatus)
-                ElMessage.success('状态修改成功')
-                loadOrders()
-                done()
+                // 如果管理员选择了维修工，则同时传递
+                const payload = { status: state.selectedStatus };
+                if (state.selectedMaintainer) {
+                  payload.assignTo = state.selectedMaintainer;
+                }
+                
+                await updateOrderStatus(row.id, payload);
+                ElMessage.success('状态修改成功');
+                loadOrders();
+                done();
               } catch (error) {
-                ElMessage.error('修改失败：' + (error.response?.data?.message || error.message))
+                ElMessage.error('修改失败：' + (error.response?.data?.message || error.message));
               }
             } else {
-              done()
+              done();
             }
           } else {
-            done()
+            done();
           }
         }
       })

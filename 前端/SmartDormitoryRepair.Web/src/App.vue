@@ -178,20 +178,15 @@ watch(() => route.path, (newPath) => {
 }, { immediate: true })
 
 onMounted(() => {
-  console.log('🔧 App.vue 已加载')
-  
   // 设置连接状态回调
   notificationService.onConnectionStateChanged = (connected, text, connecting = false) => {
-    console.log('🔔 收到状态变化:', connected, text, '连接中:', connecting)
     isConnected.value = connected
     connectionText.value = text
     isConnecting.value = connecting // ✅ 使用传入的connecting参数
   }
-  console.log('✅ 状态回调已设置')
   
   // 如果已经连接，直接更新状态
   if (notificationService.connection?.state === signalR.HubConnectionState.Connected) {
-    console.log('✅ 检测到已存在的连接')
     isConnected.value = true
     connectionText.value = '已连接'
     isConnecting.value = false
@@ -201,7 +196,6 @@ onMounted(() => {
   reconnectInterval = setInterval(async () => {
     const token = sessionStorage.getItem('token')
     if (token && notificationService.connection?.state === signalR.HubConnectionState.Disconnected) {
-      console.log('🔍 检测到SignalR断开，尝试重连...')
       await notificationService.startConnection()
     }
   }, 5000) // 5秒检测一次
@@ -218,4 +212,3 @@ onUnmounted(() => {
   }
 })
 </script>
-

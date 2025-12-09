@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using Microsoft.AspNetCore.Mvc;
+﻿﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -31,23 +31,18 @@ namespace SmartDormitoryRepair.Api.Controllers
             
             if (user == null)
             {
-                Console.WriteLine($"❌ 用户不存在: {dto.Username}");
+                // 生产环境中不应暴露用户是否存在
                 return Unauthorized(new { message = "用户名/手机号或密码错误" });
             }
-            
-            Console.WriteLine($"✅ 找到用户: {user.Username}");
-            Console.WriteLine($"📝 密码哈希长度: {user.PasswordHash?.Length ?? 0}");
-            Console.WriteLine($"🔑 密码哈希前20字符: {user.PasswordHash?.Substring(0, Math.Min(20, user.PasswordHash.Length))}");
             
             bool isPasswordValid = false;
             try
             {
                 isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
-                Console.WriteLine($"🔐 密码验证结果: {isPasswordValid}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ BCrypt验证异常: {ex.Message}");
+                // 记录日志但不暴露具体错误信息
                 return Unauthorized(new { message = "用户名或密码错误" });
             }
             
