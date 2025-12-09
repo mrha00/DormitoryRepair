@@ -1,4 +1,9 @@
-﻿﻿using Microsoft.AspNetCore.Mvc;
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using Microsoft.AspNetCore.Mvc;
+>>>>>>> 0a9a3692c8e11b03ef5122043646a3d1cc289d04
+using Microsoft.AspNetCore.Mvc;
+=======
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using Microsoft.AspNetCore.Mvc;
+>>>>>>> 0a9a3692c8e11b03ef5122043646a3d1cc289d04
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -31,7 +36,12 @@ namespace SmartDormitoryRepair.Api.Controllers
             
             if (user == null)
             {
+                Console.WriteLine($"❌ 用户不存在: {dto.Username}");
+>>>>>>> 0a9a3692c8e11b03ef5122043646a3d1cc289d04
                 // 生产环境中不应暴露用户是否存在
+=======
+                Console.WriteLine($"❌ 用户不存在: {dto.Username}");
+>>>>>>> 0a9a3692c8e11b03ef5122043646a3d1cc289d04
                 return Unauthorized(new { message = "用户名/手机号或密码错误" });
             }
             

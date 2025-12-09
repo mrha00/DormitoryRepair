@@ -138,9 +138,10 @@ namespace SmartDormitoryRepair.Api
                     var existingAdmin = context.Users.FirstOrDefault(u => u.Username == "admin");
                     if (existingAdmin != null)
                     {
-                        var newPasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123");
+                        var newPasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123");  // 🔑 改为 admin123（8位）
                         existingAdmin.PasswordHash = newPasswordHash;
                         context.SaveChanges();
+                        Console.WriteLine($"✅ 已重置admin密码哈希");
                     }
                     
                     // 重新创建维修工账号（使用新生成的密码哈希）

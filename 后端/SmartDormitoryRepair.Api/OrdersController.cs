@@ -163,11 +163,22 @@ namespace SmartDormitoryRepair.Api.Controllers
             
             var isAdmin = User.IsInRole("Admin");
             
+            // 如果要改为“处理中”或“已完成”，必须先分配维修工
+            if ((dto.Status == "Processing" || dto.Status == "Completed") && !order.AssignedTo.HasValue)
+            {
+                // 特殊情况：维修工点击“开始处理”时，自动分配给自己
+>>>>>>> 0a9a3692c8e11b03ef5122043646a3d1cc289d04
             // ⚠️ 业务规则（对所有人有效，包括管理员）：
             // 如果要改为"处理中"或"已完成"，必须先分配维修工
             if ((dto.Status == "Processing" || dto.Status == "Completed") && !order.AssignedTo.HasValue)
             {
                 // 特殊情况：维修工点击"开始处理"时，自动分配给自己
+=======
+            // 如果要改为“处理中”或“已完成”，必须先分配维修工
+            if ((dto.Status == "Processing" || dto.Status == "Completed") && !order.AssignedTo.HasValue)
+            {
+                // 特殊情况：维修工点击“开始处理”时，自动分配给自己
+>>>>>>> 0a9a3692c8e11b03ef5122043646a3d1cc289d04
                 if (User.IsInRole("Maintainer") && dto.Status == "Processing")
                 {
                     if (currentUser != null)
@@ -179,6 +190,7 @@ namespace SmartDormitoryRepair.Api.Controllers
                     {
                         return BadRequest(new { message = "系统错误：无法获取当前用户信息" });
                     }
+>>>>>>> 0a9a3692c8e11b03ef5122043646a3d1cc289d04
                 }
                 // 👑 管理员可以直接分配维修工并修改状态
                 else if (isAdmin && dto.Status == "Processing" && dto.AssignTo.HasValue)
@@ -190,6 +202,7 @@ namespace SmartDormitoryRepair.Api.Controllers
                         return BadRequest(new { message = "指定的用户不是有效的维修工" });
                     }
                     
+
                     order.AssignedTo = dto.AssignTo.Value;
                     Console.WriteLine($"✅ 工单 #{order.Id} 由管理员分配给维修工: {maintainer.Username}");
                 }
@@ -197,6 +210,12 @@ namespace SmartDormitoryRepair.Api.Controllers
                 {
                     // 🚫 普通用户不能直接修改为"处理中"或"已完成"，必须先分配维修工
                     return BadRequest(new { message = "请先分配维修工再修改状态！" });
+=======
+                else
+                {
+                    // 🚫 管理员也不能直接修改为“处理中”或“已完成”，必须先分配维修工
+                    return BadRequest(new { message = "请先分配维修工再修改状态！\n\n原因：工单必须有明确的责任人，否则无法追责。" });
+>>>>>>> 0a9a3692c8e11b03ef5122043646a3d1cc289d04
                 }
             }
             
